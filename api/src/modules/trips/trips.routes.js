@@ -1,3 +1,4 @@
+import { emitToOrg } from "../../realtime.js";
 import { recordSystemEvent } from "../events/events.service.js";
 import { Router } from "express";
 import { z } from "zod";
@@ -260,6 +261,12 @@ r.post(
         actor: req.user._id,
         notes: reason,
       });
+    emitToOrg(org, "trip:status", {
+      tripId: trip.id,
+      tripNumber: trip.tripNumber,
+      status: to,
+      vehicleId: trip.vehicle ? String(trip.vehicle) : null,
+    });
     await audit(req, "trip.transition", "Trip", trip.id, { from, to });
     res.json({ success: true, data: trip });
   }),

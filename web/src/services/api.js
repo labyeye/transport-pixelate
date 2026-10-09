@@ -5,6 +5,7 @@ let accessToken = null;
 let onSessionExpired = () => {};
 export const tokens = {
   setAccess: (t) => (accessToken = t),
+  getAccess: () => accessToken,
   getRefresh: () => {
     try {
       return localStorage.getItem(RT_KEY);

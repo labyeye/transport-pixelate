@@ -22,6 +22,7 @@ export const PERMISSIONS = [
   "passengers:read",
   "passengers:write",
   "tracking:read",
+  "tracking:write",
   "maintenance:read",
   "maintenance:write",
   "expenses:read",

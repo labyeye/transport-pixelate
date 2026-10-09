@@ -21,6 +21,7 @@
     "morgan": "^1.12.1",
     "multer": "^2.4.0",
     "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4",
     "zod": "^4.6.5"
   },
   "devDependencies": {
