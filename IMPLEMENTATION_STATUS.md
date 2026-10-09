@@ -1,9 +1,9 @@
 # Nest Transport — Implementation Status
 
-Last updated: 2026-10-09. Design reference: Nest Play (`sports-pixelate/frontend`). Stack: React+Vite+TS+Tailwind (same config/tokens as Nest Play), Express+TS+Mongoose API.
+Last updated: 2026-10-09. Design reference: Nest Play (`sports-pixelate/frontend`). Stack: React+Vite+Tailwind (JSX) (same config/tokens as Nest Play), Express+Mongoose API (plain JavaScript, ES modules).
 
 ## Nest Play inspection findings (Phase 1)
-- Web: Vite, React 18, TS, **Tailwind 3 + shadcn/Radix**, lucide-react, recharts, TanStack Query, React Router 6, DM Sans.
+- Web: Vite, React 18, **Tailwind 3 + shadcn/Radix**, lucide-react, recharts, TanStack Query, React Router 6, DM Sans.
 - Look: **neo-brutalist** — 2px black borders, hard offset shadows (`nb-card`, `nb-btn`, `nb-badge`), primary `#024BAB`, accent `#FA731C`, sidebar 15.5rem / header 4rem, uppercase 12px table headers on `#024BAB/5`.
 - Backend: plain-JS Express + Mongoose + JWT. Mobile: React Native 0.86 (`NestSports/`), lucide-react-native, React Navigation, `@react-native-community/geolocation`.
 - Reused verbatim: `tailwind.config.ts`, `index.css` (tokens + nb-* utilities), `button/card/dialog/input/select/tabs/badge/StatCard/Toaster`, `AppLayout/AppSidebar/AppHeader` (adapted: nav, auth, brand; Nest Play notifications and trial banner removed).
@@ -24,6 +24,7 @@ Routes/stops, trips & dispatch, trip events, GPS ingestion + live tracking + Soc
 - Web UI visuals have **not** been compared side-by-side with Nest Play in a browser yet; build and typecheck pass only.
 - Refresh token is stored in localStorage (Nest Play convention); httpOnly cookie would be stronger.
 - Forms use controlled state with server-side Zod validation; react-hook-form not yet used.
+- Whole project is plain JavaScript (no TypeScript) by request; Nest Play web is TS, so copied components had types stripped.
 - Local dev has no MongoDB installed: use `npm run dev:memory` (in-memory, data lost on exit).
 - Sidebar only lists built modules.
 
