@@ -1,5 +1,6 @@
 // {{var}} substitution into plain text. Values are stringified and stripped of control characters;
 // nothing is interpreted as HTML or code.
+/* eslint-disable no-control-regex -- stripping control characters is the point */
 export function render(template, vars = {}) {
   return String(template ?? "")
     .replace(/\{\{\s*(\w+)\s*\}\}/g, (_, k) =>

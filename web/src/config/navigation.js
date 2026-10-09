@@ -1,12 +1,19 @@
 import {
+  Bell,
+  FileText,
+  Fuel,
   LayoutDashboard,
+  MapPin,
   Navigation,
   Route,
   Truck,
   UserRound,
   Users,
+  Wrench,
 } from "lucide-react";
+
 // Only modules that are actually built appear here; add entries as modules land.
+// An item with no `permission` is shown to every signed-in user.
 export const NAV_GROUPS = [
   {
     label: "Overview",
@@ -34,6 +41,41 @@ export const NAV_GROUPS = [
         icon: Users,
         permission: "drivers:read",
       },
+      {
+        title: "Documents",
+        href: "/documents",
+        icon: FileText,
+        permission: "vehicles:read",
+      },
+    ],
+  },
+  {
+    label: "Operations",
+    items: [
+      {
+        title: "Routes",
+        href: "/routes",
+        icon: Route,
+        permission: "routes:read",
+      },
+      {
+        title: "Trips",
+        href: "/trips",
+        icon: Navigation,
+        permission: "trips:read",
+      },
+      {
+        title: "Live Tracking",
+        href: "/tracking",
+        icon: MapPin,
+        permission: "tracking:read",
+      },
+      {
+        title: "Passengers",
+        href: "/passengers",
+        icon: UserRound,
+        permission: "passengers:read",
+      },
     ],
   },
   {
@@ -54,23 +96,18 @@ export const NAV_GROUPS = [
     ],
   },
   {
-    label: "Operations",
+    label: "Account",
     items: [
       {
-        title: "Routes",
-        href: "/routes",
-        icon: Route,
-        permission: "routes:read",
-      },
-      {
-        title: "Trips",
-        href: "/trips",
-        icon: Navigation,
-        permission: "trips:read",
+        title: "Notifications",
+        href: "/notifications",
+        icon: Bell,
+        permission: "",
       },
     ],
   },
 ];
+
 export const getNavGroups = (can) =>
   NAV_GROUPS.map((g) => ({
     ...g,

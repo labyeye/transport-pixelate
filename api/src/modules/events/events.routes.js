@@ -10,6 +10,10 @@ import { ah } from "../../utils/asyncHandler.js";
 import { badRequest, conflict, notFound } from "../../utils/errors.js";
 import { audit } from "../../models/AuditLog.js";
 import {
+  breakdownReported,
+  tripStatusChanged,
+} from "../notifications/triggers.js";
+import {
   assertCanOperate,
   effectiveEvents,
   passengerStates,

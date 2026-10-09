@@ -101,6 +101,50 @@ export default function DashboardPage() {
               color="#D97706"
             />
             <StatCard
+              label="Trips today"
+              value={data.trips.today}
+              icon={Navigation}
+            />
+            <StatCard
+              label="Trips in progress"
+              value={data.trips.inProgress}
+              icon={Navigation}
+              color="#FA731C"
+            />
+            <StatCard
+              label="Completed today"
+              value={data.trips.completed}
+              icon={CheckCircle2}
+              color="#00C48C"
+            />
+            <StatCard
+              label="Delayed / cancelled"
+              value={data.trips.delayed + data.trips.cancelled}
+              icon={AlertTriangle}
+              color="#EF4444"
+            />
+            <StatCard
+              label="Open maintenance"
+              value={data.maintenance.open}
+              icon={Wrench}
+              color="#D97706"
+            />
+            {data.costs && (
+              <StatCard
+                label="Fuel this month"
+                value={formatCurrency(data.costs.fuel)}
+                icon={Fuel}
+              />
+            )}
+            {data.costs && (
+              <StatCard
+                label="Pending expenses"
+                value={data.costs.pendingExpenses}
+                icon={Receipt}
+                color="#FA731C"
+              />
+            )}
+            <StatCard
               label="Out of service"
               value={data.vehicles.outOfService}
               icon={AlertTriangle}
@@ -137,8 +181,8 @@ export default function DashboardPage() {
             )}
           </div>
           <p className="text-xs text-muted-foreground font-medium mt-4">
-            Trip, tracking, maintenance and expense metrics appear here once
-            those modules are enabled.
+            Counts come from live records. Today's figures follow your
+            organization's timezone.
           </p>
         </>
       )}

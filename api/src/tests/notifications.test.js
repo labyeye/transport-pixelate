@@ -158,6 +158,7 @@ beforeEach(() => {
     delete process.env[k];
 });
 
+/* eslint-disable no-control-regex */
 describe("in-app notifications", () => {
   it("notifies the assigned driver and staff, and keeps inboxes private", async () => {
     const w = await world("n1@x.com");
@@ -231,6 +232,63 @@ describe("in-app notifications", () => {
     Notification.create = spy;
     expect(res.status).toBe(200); // the transition committed regardless
     expect(res.body.data.status).toBe("cancelled");
+  });
+});
+
+describe("operational event triggers", () => {
+  it("breakdown and delay reports succeed and alert staff", async () => {
+    const w = await world("ev1@x.com");
+    const trip = await w.trip();
+    await w.move(trip._id, "ready");
+    await w.move(trip._id, "in_progress");
+    const rec = (body) =>
+      request(app)
+        .post(`/api/v1/trips/${trip._id}/events`)
+        .set(auth(w.t))
+        .send(body);
+    const b = await rec({
+      type: "breakdown_reported",
+      notes: "Engine overheating",
+    });
+    expect(b.status).toBe(201); // regression: this used to 500 on a missing import
+    const box = await eventually(async () => {
+      const x = await w.inbox();
+      return x.data.find((n) => n.event === "vehicle_breakdown") ? x : null;
+    });
+    const hit = box.data.find((n) => n.event === "vehicle_breakdown");
+    expect(hit.severity).toBe("critical");
+    expect(hit.body).toContain("Engine overheating");
+    const d = await rec({ type: "delay_reported", notes: "Road blocked" });
+    expect(d.status).toBe(201);
+    expect(
+      (
+        await eventually(async () => {
+          const x = await w.inbox();
+          return x.data.find((n) => n.event === "trip_delayed") ? x : null;
+        })
+      ).data.length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("editing a route alerts staff about upcoming trips", async () => {
+    const w = await world("ev2@x.com");
+    await w.trip();
+    const upd = await w.put(`/api/v1/routes/${w.route._id}`, {
+      name: "Route One",
+      code: "R1",
+      stops: [
+        { name: "A", lat: 1, lng: 1 },
+        { name: "C", lat: 3, lng: 3 },
+      ],
+    });
+    expect(upd.status).toBe(200);
+    const box = await eventually(async () => {
+      const x = await w.inbox();
+      return x.data.find((n) => n.event === "route_changed") ? x : null;
+    });
+    expect(box.data.find((n) => n.event === "route_changed").body).toContain(
+      "1 upcoming trip",
+    );
   });
 });
 
