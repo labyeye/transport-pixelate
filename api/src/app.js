@@ -9,6 +9,8 @@ import driverRoutes from "./modules/drivers/drivers.routes.js";
 import routeRoutes from "./modules/routes/routes.routes.js";
 import tripRoutes from "./modules/trips/trips.routes.js";
 import scheduleRoutes from "./modules/trips/schedules.routes.js";
+import eventRoutes from "./modules/events/events.routes.js";
+import passengerRoutes from "./modules/passengers/passengers.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 export function createApp(allowedOrigins) {
@@ -31,6 +33,8 @@ export function createApp(allowedOrigins) {
   app.use("/api/v1/drivers", driverRoutes);
   app.use("/api/v1/routes", routeRoutes);
   app.use("/api/v1/trips", tripRoutes);
+  app.use("/api/v1/trips", eventRoutes);
+  app.use("/api/v1/passengers", passengerRoutes);
   app.use("/api/v1/trip-schedules", scheduleRoutes);
   app.use("/api/v1/dashboard", dashboardRoutes);
   app.use((_req, res) =>

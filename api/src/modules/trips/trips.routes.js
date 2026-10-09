@@ -1,3 +1,4 @@
+import { recordSystemEvent } from "../events/events.service.js";
 import { Router } from "express";
 import { z } from "zod";
 import { Trip, TRIP_STATUSES } from "../../models/Trip.js";
@@ -107,6 +108,13 @@ r.post(
       scheduledDeparture: start,
       expectedArrival: end,
     });
+    await recordSystemEvent(trip, "trip_created", { actor: req.user._id });
+    if (trip.driver)
+      await recordSystemEvent(trip, "driver_assigned", { actor: req.user._id });
+    if (trip.vehicle)
+      await recordSystemEvent(trip, "vehicle_assigned", {
+        actor: req.user._id,
+      });
     await audit(req, "trip.create", "Trip", trip.id);
     res.status(201).json({ success: true, data: trip });
   }),
@@ -240,6 +248,18 @@ r.post(
       note: reason,
     });
     await trip.save();
+    const EV = {
+      in_progress: from === "ready" ? "trip_started" : null,
+      delayed: "delay_reported",
+      completed: "trip_completed",
+      cancelled: "trip_cancelled",
+      aborted: "trip_aborted",
+    };
+    if (EV[to])
+      await recordSystemEvent(trip, EV[to], {
+        actor: req.user._id,
+        notes: reason,
+      });
     await audit(req, "trip.transition", "Trip", trip.id, { from, to });
     res.json({ success: true, data: trip });
   }),
@@ -309,6 +329,16 @@ r.post(
       note: b.reason,
     });
     await trip.save();
+    if (b.vehicle)
+      await recordSystemEvent(trip, "vehicle_assigned", {
+        actor: req.user._id,
+        notes: b.reason,
+      });
+    if (b.driver)
+      await recordSystemEvent(trip, "driver_assigned", {
+        actor: req.user._id,
+        notes: b.reason,
+      });
     await audit(req, "trip.replace", "Trip", trip.id, b);
     res.json({ success: true, data: trip });
   }),

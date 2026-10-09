@@ -211,37 +211,376 @@
     --nb-shadow: 3px 3px 0px #0a0a0a;
   }
 
-  :where(.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]):not(table):not(tr):not(td):not(th)) {
+  :where(
+    .border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      ):not(table):not(tr):not(td):not(th)
+  ) {
     border-radius: var(--nb-radius);
     box-shadow: var(--nb-shadow);
   }
 
   /* Children that paint a background inherit the parent's corners, so
      coloured modal headers / table wrappers don't poke out of the radius. */
-  :where(.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]) > :is(div, section, header, form, table):first-child) {
+  :where(
+    .border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      )
+      > :is(div, section, header, form, table):first-child
+  ) {
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
   }
-  :where(.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]) > :is(div, section, footer, form, table):last-child) {
+  :where(
+    .border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      )
+      > :is(div, section, footer, form, table):last-child
+  ) {
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
   }
 
-  :where(button.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]), a.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]), label.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"])) {
+  :where(
+    button.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      ),
+    a.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      ),
+    label.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      )
+  ) {
     transition:
       transform 120ms ease,
       box-shadow 120ms ease,
       background-color 120ms ease;
   }
-  :where(button.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]):not(:disabled), a.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"])):hover {
+  :where(
+    button.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      ):not(:disabled),
+    a.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      )
+  ):hover {
     transform: translate(-1px, -1px);
     box-shadow: 4px 4px 0px #0a0a0a;
   }
-  :where(button.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"]):not(:disabled), a.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"])):active {
+  :where(
+    button.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      ):not(:disabled),
+    a.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      )
+  ):active {
     transform: translate(2px, 2px);
     box-shadow: 1px 1px 0px #0a0a0a;
   }
-  :where(button.border-2:not(.no-nb,.animate-spin,.w-2,.w-3,.w-4,.w-5,.w-6,.w-2\.5,.w-3\.5,[class*="border-gray"],[class*="border-white"],[class*="border-transparent"],[class*="border-t-transparent"],[class*="border-red"],[class*="border-green"],[class*="border-blue"],[class*="border-orange"],[class*="border-amber"],[class*="border-yellow"],[class*="border-purple"],[class*="border-slate"],[class*="border-emerald"],[class*="border-primary"],[class*="border-input"],[class*="border-["],[class*="border-black/"],[class*="border-dashed"],[class*="border-dotted"])):disabled {
+  :where(
+    button.border-2:not(
+        .no-nb,
+        .animate-spin,
+        .w-2,
+        .w-3,
+        .w-4,
+        .w-5,
+        .w-6,
+        .w-2\.5,
+        .w-3\.5,
+        [class*="border-gray"],
+        [class*="border-white"],
+        [class*="border-transparent"],
+        [class*="border-t-transparent"],
+        [class*="border-red"],
+        [class*="border-green"],
+        [class*="border-blue"],
+        [class*="border-orange"],
+        [class*="border-amber"],
+        [class*="border-yellow"],
+        [class*="border-purple"],
+        [class*="border-slate"],
+        [class*="border-emerald"],
+        [class*="border-primary"],
+        [class*="border-input"],
+        [class*="border-["],
+        [class*="border-black/"],
+        [class*="border-dashed"],
+        [class*="border-dotted"]
+      )
+  ):disabled {
     box-shadow: none;
   }
 }
@@ -280,30 +619,30 @@ span:is(
       it had before. Fill and text colours are untouched.
 ------------------------------------------------------------------- */
 :where(
-    .border-2:not(
-        .relative,
-        .absolute,
-        .sticky,
-        .fixed,
-        button,
-        input,
-        select,
-        textarea,
-        label,
-        a,
-        span,
-        svg,
-        img,
-        .no-nb,
-        .animate-spin,
-        .w-2,
-        .w-3,
-        .w-4,
-        .w-5,
-        .w-6,
-        [class*="border-dashed"]
-      )
-  ) {
+  .border-2:not(
+    .relative,
+    .absolute,
+    .sticky,
+    .fixed,
+    button,
+    input,
+    select,
+    textarea,
+    label,
+    a,
+    span,
+    svg,
+    img,
+    .no-nb,
+    .animate-spin,
+    .w-2,
+    .w-3,
+    .w-4,
+    .w-5,
+    .w-6,
+    [class*="border-dashed"]
+  )
+) {
   overflow: clip;
 }
 

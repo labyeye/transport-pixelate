@@ -5,6 +5,7 @@ import { ToastProvider } from "@/hooks/use-toast";
 import AuthPage from "@/pages/AuthPage";
 import DashboardPage from "@/pages/DashboardPage";
 import VehiclesPage from "@/pages/VehiclesPage";
+import PassengersPage from "@/pages/PassengersPage";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
@@ -66,6 +67,14 @@ export default function App() {
                 element={
                   <Protected>
                     <TripsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/passengers"
+                element={
+                  <Protected>
+                    <PassengersPage />
                   </Protected>
                 }
               />

@@ -18,6 +18,9 @@ export const PERMISSIONS = [
   "trips:read",
   "trips:write",
   "trips:dispatch",
+  "trips:operate",
+  "passengers:read",
+  "passengers:write",
   "tracking:read",
   "maintenance:read",
   "maintenance:write",
@@ -40,6 +43,9 @@ export const ROLE_PERMISSIONS = {
     "trips:read",
     "trips:write",
     "trips:dispatch",
+    "trips:operate",
+    "passengers:read",
+    "passengers:write",
     "tracking:read",
     "maintenance:read",
     "reports:read",
@@ -51,8 +57,9 @@ export const ROLE_PERMISSIONS = {
     "maintenance:read",
     "reports:read",
   ],
-  driver: ["trips:read", "routes:read"],
-  attendant: ["trips:read", "routes:read"],
+  // Drivers/attendants may only operate trips they are assigned to (enforced in the events module).
+  driver: ["trips:read", "routes:read", "trips:operate", "passengers:read"],
+  attendant: ["trips:read", "routes:read", "trips:operate", "passengers:read"],
   viewer: readOnly,
 };
 export const can = (role, p) => ROLE_PERMISSIONS[role]?.includes(p) ?? false;

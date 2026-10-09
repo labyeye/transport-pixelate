@@ -21,6 +21,7 @@ import {
 import { FilterSelect } from "@/components/common/SearchInput";
 import { DataTable, EmptyState } from "@/components/common/DataTable";
 import { StatusBadge, TRIP_STATUS } from "@/components/common/StatusBadge";
+import { EventTimeline, Manifest } from "@/components/common/TripLive";
 import { Modal } from "@/components/common/Modal";
 import { Field, inputCls } from "@/components/common/Field";
 import { useAuth } from "@/contexts/AuthContext";
@@ -459,6 +460,7 @@ function ReplaceDialog({ trip, onClose }) {
 }
 
 function TripDetail({ id, onClose }) {
+  const [tab, setTab] = useState("overview");
   const { data } = useQuery({
     queryKey: ["trip", id],
     queryFn: async () => (await get(`/trips/${id}`)).data,
@@ -485,47 +487,71 @@ function TripDetail({ id, onClose }) {
             <b>{data.driver?.name ?? "—"}</b> · Attendant:{" "}
             <b>{data.attendant?.name ?? "—"}</b>
           </p>
-          {data.delayReason && <p>Delay reason: {data.delayReason}</p>}
-          {data.cancellationReason && (
-            <p>Cancel/abort reason: {data.cancellationReason}</p>
+          <div className="flex gap-2">
+            {[
+              ["overview", "Overview"],
+              ["manifest", "Manifest"],
+              ["events", "Events"],
+            ].map(([k, l]) => (
+              <button
+                key={k}
+                onClick={() => setTab(k)}
+                className={`border-2 border-black px-3 py-1 text-xs font-bold ${tab === k ? "bg-[#024BAB] text-white" : "bg-white"}`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+          {tab === "manifest" && <Manifest trip={data} />}
+          {tab === "events" && <EventTimeline trip={data} />}
+          {tab === "overview" && (
+            <>
+              {data.delayReason && <p>Delay reason: {data.delayReason}</p>}
+              {data.cancellationReason && (
+                <p>Cancel/abort reason: {data.cancellationReason}</p>
+              )}
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-1">
+                  Planned stops (route v{data.routeSnapshot.version} snapshot)
+                </p>
+                <ol className="border-2 border-black bg-white divide-y divide-black/10">
+                  {data.routeSnapshot.stops.map((s) => (
+                    <li
+                      key={s.sequence}
+                      className="px-3 py-2 flex justify-between"
+                    >
+                      <span>
+                        {s.sequence}. {s.name}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {s.plannedArrival ?? ""}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-1">
+                  History
+                </p>
+                <ul className="border-2 border-black bg-white divide-y divide-black/10">
+                  {data.history.map((h, i) => (
+                    <li key={i} className="px-3 py-2">
+                      <b className="capitalize">{h.action}</b>
+                      {h.to ? ` → ${h.to.replace("_", " ")}` : ""}{" "}
+                      <span className="text-muted-foreground">
+                        · {new Date(h.at).toLocaleString("en-IN")}
+                        {h.by?.name ? ` · ${h.by.name}` : ""}
+                      </span>
+                      {h.note ? (
+                        <p className="text-muted-foreground">{h.note}</p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
           )}
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider mb-1">
-              Planned stops (route v{data.routeSnapshot.version} snapshot)
-            </p>
-            <ol className="border-2 border-black bg-white divide-y divide-black/10">
-              {data.routeSnapshot.stops.map((s) => (
-                <li key={s.sequence} className="px-3 py-2 flex justify-between">
-                  <span>
-                    {s.sequence}. {s.name}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {s.plannedArrival ?? ""}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider mb-1">
-              History
-            </p>
-            <ul className="border-2 border-black bg-white divide-y divide-black/10">
-              {data.history.map((h, i) => (
-                <li key={i} className="px-3 py-2">
-                  <b className="capitalize">{h.action}</b>
-                  {h.to ? ` → ${h.to.replace("_", " ")}` : ""}{" "}
-                  <span className="text-muted-foreground">
-                    · {new Date(h.at).toLocaleString("en-IN")}
-                    {h.by?.name ? ` · ${h.by.name}` : ""}
-                  </span>
-                  {h.note ? (
-                    <p className="text-muted-foreground">{h.note}</p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       )}
     </Modal>

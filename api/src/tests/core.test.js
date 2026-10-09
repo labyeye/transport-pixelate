@@ -6,14 +6,12 @@ import { createApp } from "../app.js";
 let mongod;
 const app = createApp(["http://localhost"]);
 async function signup(email, org) {
-  const res = await request(app)
-    .post("/api/v1/auth/register")
-    .send({
-      organizationName: org,
-      name: "Owner",
-      email,
-      password: "password123",
-    });
+  const res = await request(app).post("/api/v1/auth/register").send({
+    organizationName: org,
+    name: "Owner",
+    email,
+    password: "password123",
+  });
   expect(res.status).toBe(201);
   return res.body.data.accessToken;
 }
@@ -56,14 +54,12 @@ describe("auth", () => {
     expect(locked.status).toBe(401);
   });
   it("invalidates refresh token after logout", async () => {
-    const res = await request(app)
-      .post("/api/v1/auth/register")
-      .send({
-        organizationName: "Org L",
-        name: "Lee",
-        email: "l@x.com",
-        password: "password123",
-      });
+    const res = await request(app).post("/api/v1/auth/register").send({
+      organizationName: "Org L",
+      name: "Lee",
+      email: "l@x.com",
+      password: "password123",
+    });
     const { accessToken, refreshToken } = res.body.data;
     await request(app).post("/api/v1/auth/logout").set(auth(accessToken));
     expect(
