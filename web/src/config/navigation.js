@@ -1,4 +1,4 @@
-import { LayoutDashboard, Route, Truck, Users } from "lucide-react";
+import { LayoutDashboard, Navigation, Route, Truck, Users } from "lucide-react";
 // Only modules that are actually built appear here; add entries as modules land.
 export const NAV_GROUPS = [
   {
@@ -31,7 +31,20 @@ export const NAV_GROUPS = [
   },
   {
     label: "Operations",
-    items: [{ title: "Routes", href: "/routes", icon: Route, permission: "routes:read" }],
+    items: [
+      {
+        title: "Routes",
+        href: "/routes",
+        icon: Route,
+        permission: "routes:read",
+      },
+      {
+        title: "Trips",
+        href: "/trips",
+        icon: Navigation,
+        permission: "trips:read",
+      },
+    ],
   },
 ];
 export const getNavGroups = (can) =>

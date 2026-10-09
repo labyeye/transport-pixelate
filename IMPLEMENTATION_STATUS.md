@@ -16,15 +16,18 @@ Last updated: 2026-10-09. Design reference: Nest Play (`sports-pixelate/frontend
 - Dashboard: real counts + 30-day document expiry list (vehicle docs + driver licences) + empty state.
 - Web: login/register, dashboard, vehicles, drivers/staff (list, search, filters, pagination, forms, confirm dialogs, loading/empty/error states).
 - Routes & stops (Phase 3): Route model with embedded ordered stops, server-derived sequence, coordinate/time validation, per-org unique code, activate (needs 2 active stops), duplicate, archive (inactive only), `version` bump on edit for future trip snapshots, vehicle/driver refs checked in-org and for availability. Web: routes list + editor with Leaflet map (click to add stops, reorder, remove). Distance/duration are manual (no routing provider configured); map lines are straight, not road geometry.
-- Tests: 12 API tests passing (auth, lockout, logout invalidation, tenant isolation, assignment conflicts, routes).
+- Trips & dispatch (Phase 4): Trip model with per-org numbering (TRP-00001), immutable route snapshot (route edits never change existing trips), server-side state machine (draft/scheduled/assigned/ready/in_progress/delayed/completed/cancelled/aborted; terminal states cannot be restarted), overlap detection for vehicle/driver/attendant (back-to-back allowed), availability + licence-expiry checks, vehicle on_trip/driver on_duty set at dispatch and released on completion/abort, reasons required for delay/cancel/abort, mid-trip vehicle/driver replacement, embedded status history, reschedule via edit. Recurring schedules: days-of-week, bounded generation (62 days), idempotent per (schedule,date) via unique key, conflicting days created unassigned and reported. Times converted using the organization's IANA timezone. Web: trips table, week calendar, create/edit, action dialogs, replace, detail with history, schedules tab, dashboard trip cards.
+- Tests: 20 API tests passing (auth, lockout, logout invalidation, tenant isolation, assignment conflicts, routes, trip lifecycle, overlaps, replacement, schedule generation).
 
 ## Phases
-1 Foundation (done) · 2 Vehicles/drivers/dashboard (done) · 3 Routes & stops (done) · 4 Trips & dispatch · 5 Trip events & manifest · 6 GPS & live tracking · 7 Maintenance/fuel/expenses · 8 Documents & storage · 9 Notifications · 10 Transport requests · 11 Reports · 12 Settings/users/password reset · 13 Fees & billing · 14 Mobile app · 15 API docs, deploy docs, UI check
+1 Foundation (done) · 2 Vehicles/drivers/dashboard (done) · 3 Routes & stops (done) · 4 Trips & dispatch (done) · 5 Trip events & manifest · 6 GPS & live tracking · 7 Maintenance/fuel/expenses · 8 Documents & storage · 9 Notifications · 10 Transport requests · 11 Reports · 12 Settings/users/password reset · 13 Fees & billing · 14 Mobile app · 15 API docs, deploy docs, UI check
 
 ## Not started (pending)
-Trips & dispatch, trip events, GPS ingestion + live tracking + Socket.IO, requests, maintenance, fuel/expenses, document uploads/storage, notifications (+ providers), billing/Razorpay, reports/CSV, settings/user management UI, password reset, OpenAPI docs, mobile app (driver/attendant/parent), deployment docs.
+Trip events, GPS ingestion + live tracking + Socket.IO, requests, maintenance, fuel/expenses, document uploads/storage, notifications (+ providers), billing/Razorpay, reports/CSV, settings/user management UI, password reset, OpenAPI docs, mobile app (driver/attendant/parent), deployment docs.
 
 ## Known limitations
+- Trip start is not yet restricted by time-of-day or to the assigned driver; driver-only start comes with the mobile app (Phase 14). Trip history is an embedded log; the full TripEvent timeline arrives in Phase 5.
+- Recurring generation is a manual, bounded action (no background auto-generation job).
 - Web UI visuals have **not** been compared side-by-side with Nest Play in a browser yet; build and typecheck pass only.
 - Refresh token is stored in localStorage (Nest Play convention); httpOnly cookie would be stronger.
 - Forms use controlled state with server-side Zod validation; react-hook-form not yet used.

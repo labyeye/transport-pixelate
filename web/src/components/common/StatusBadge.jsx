@@ -31,3 +31,15 @@ export function StatusBadge({ meta }) {
     </span>
   );
 }
+
+export const TRIP_STATUS = {
+  draft: { label: "Draft", tone: "gray" },
+  scheduled: { label: "Scheduled", tone: "blue" },
+  assigned: { label: "Assigned", tone: "purple" },
+  ready: { label: "Ready", tone: "green" },
+  in_progress: { label: "In Progress", tone: "orange" },
+  delayed: { label: "Delayed", tone: "yellow" },
+  completed: { label: "Completed", tone: "green" },
+  cancelled: { label: "Cancelled", tone: "red" },
+  aborted: { label: "Aborted", tone: "red" },
+};
