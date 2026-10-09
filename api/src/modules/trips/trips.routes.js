@@ -1,4 +1,5 @@
 import { emitToOrg } from "../../realtime.js";
+import { tripAssigned, tripStatusChanged } from "../notifications/triggers.js";
 import { recordSystemEvent } from "../events/events.service.js";
 import { Router } from "express";
 import { z } from "zod";
@@ -116,6 +117,7 @@ r.post(
       await recordSystemEvent(trip, "vehicle_assigned", {
         actor: req.user._id,
       });
+    tripAssigned(trip);
     await audit(req, "trip.create", "Trip", trip.id);
     res.status(201).json({ success: true, data: trip });
   }),
@@ -155,6 +157,7 @@ r.put(
       end,
       excludeId: trip._id,
     });
+    const prevDriver = String(trip.driver ?? "");
     const rescheduled =
       +start !== +trip.scheduledDeparture || +end !== +trip.expectedArrival;
     Object.assign(trip, {
@@ -179,6 +182,7 @@ r.put(
       to: trip.status,
     });
     await trip.save();
+    if (trip.driver && String(trip.driver) !== prevDriver) tripAssigned(trip);
     await audit(req, "trip.update", "Trip", trip.id);
     res.json({ success: true, data: trip });
   }),
@@ -267,6 +271,7 @@ r.post(
       status: to,
       vehicleId: trip.vehicle ? String(trip.vehicle) : null,
     });
+    tripStatusChanged(trip, to, reason, req.user._id);
     await audit(req, "trip.transition", "Trip", trip.id, { from, to });
     res.json({ success: true, data: trip });
   }),
@@ -346,6 +351,7 @@ r.post(
         actor: req.user._id,
         notes: b.reason,
       });
+    if (b.driver) tripAssigned(trip);
     await audit(req, "trip.replace", "Trip", trip.id, b);
     res.json({ success: true, data: trip });
   }),

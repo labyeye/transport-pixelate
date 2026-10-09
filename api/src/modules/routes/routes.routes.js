@@ -8,6 +8,7 @@ import { validate } from "../../middleware/validate.js";
 import { ah } from "../../utils/asyncHandler.js";
 import { conflict, notFound, badRequest } from "../../utils/errors.js";
 import { escapeRegex, meta, pageQuery } from "../../utils/pagination.js";
+import { routeChanged } from "../notifications/triggers.js";
 import { audit } from "../../models/AuditLog.js";
 
 const r = Router();
@@ -227,6 +228,7 @@ r.put(
     route.set({ ...rest, ...refs, stops: toStops(stops) });
     route.version += 1; // trips created later snapshot this version; existing trips keep theirs
     await route.save();
+    routeChanged(route);
     await audit(req, "route.update", "Route", route.id, {
       version: route.version,
     });

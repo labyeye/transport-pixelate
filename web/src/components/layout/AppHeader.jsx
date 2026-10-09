@@ -1,9 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { Search, Menu } from "lucide-react";
-import { useState } from "react";
+import { Menu } from "lucide-react";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 export function AppHeader({ title, onMenuOpen }) {
   const { user } = useAuth();
-  const [searchVal, setSearchVal] = useState("");
   if (!user) return null;
   return (
     <header className="h-16 border-b-2 border-black bg-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20 shrink-0">
@@ -21,16 +20,7 @@ export function AppHeader({ title, onMenuOpen }) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="hidden md:flex items-center gap-2 border-2 border-black bg-white px-3 py-1.5 w-48 lg:w-52">
-          <Search className="w-4 h-4 text-black shrink-0" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchVal}
-            onChange={(e) => setSearchVal(e.target.value)}
-            className="bg-transparent text-sm outline-none w-full text-black placeholder:text-muted-foreground font-medium"
-          />
-        </div>
+        <NotificationBell />
 
         <div className="flex items-center gap-2 border-2 border-black bg-[#024BAB] px-2 sm:px-3 py-1.5">
           <div className="w-6 h-6 border-2 border-black shrink-0 overflow-hidden bg-[#FA731C] flex items-center justify-center text-[10px] font-bold text-white rounded-full">

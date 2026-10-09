@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "node",
+    fileParallelism: false, // each file boots its own in-memory MongoDB; avoid port races
     testTimeout: 60000,
     hookTimeout: 120000,
     env: {

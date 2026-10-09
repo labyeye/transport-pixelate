@@ -261,6 +261,9 @@ r.post(
       });
       await trip.save();
     }
+    if (b.type === "breakdown_reported") breakdownReported(trip, b.notes);
+    if (b.type === "delay_reported")
+      tripStatusChanged(trip, "delayed", b.notes);
     res.status(201).json({ success: true, data: ev });
   }),
 );

@@ -27,6 +27,7 @@ export function attachRealtime(httpServer, allowedOrigins) {
         return next(new Error("unauthorized"));
       if (!can(user.role, "trips:read")) return next(new Error("forbidden"));
       socket.data.org = String(user.organization);
+      socket.data.userId = String(user._id);
       socket.data.role = user.role;
       next();
     } catch {
@@ -35,6 +36,7 @@ export function attachRealtime(httpServer, allowedOrigins) {
   });
   io.on("connection", (socket) => {
     socket.join(`org:${socket.data.org}`);
+    socket.join(`user:${socket.data.userId}`);
     // Location events are only for roles that may see tracking.
     if (can(socket.data.role, "tracking:read"))
       socket.join(`org:${socket.data.org}:tracking`);
@@ -45,6 +47,10 @@ export function attachRealtime(httpServer, allowedOrigins) {
 export function emitToOrg(org, event, payload, { tracking = false } = {}) {
   if (!io) return;
   io.to(tracking ? `org:${org}:tracking` : `org:${org}`).emit(event, payload);
+}
+
+export function emitToUser(userId, event, payload) {
+  io?.to(`user:${userId}`).emit(event, payload);
 }
 
 export const closeRealtime = () => io?.close();

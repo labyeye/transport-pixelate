@@ -19,6 +19,7 @@ const userSchema = new Schema(
     phone: String,
     password: { type: String, required: true, select: false },
     role: { type: String, enum: ROLES, required: true },
+    mutedChannels: { type: [String], default: [] }, // external channels this person opted out of
     status: { type: String, enum: ["active", "inactive"], default: "active" },
     // Bumped on logout / password change; refresh tokens carry it and are rejected on mismatch.
     tokenVersion: { type: Number, default: 0 },

@@ -74,5 +74,5 @@ export const NAV_GROUPS = [
 export const getNavGroups = (can) =>
   NAV_GROUPS.map((g) => ({
     ...g,
-    items: g.items.filter((i) => can(i.permission)),
+    items: g.items.filter((i) => !i.permission || can(i.permission)),
   })).filter((g) => g.items.length);

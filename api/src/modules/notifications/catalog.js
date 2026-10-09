@@ -1,0 +1,105 @@
+// Every event the system can notify about, with default routing. Organizations can override
+// enabled / channels / roles in NotificationSetting; templates can be overridden per channel.
+export const CHANNELS = ["in_app", "email", "sms", "whatsapp", "push"];
+export const EXTERNAL = ["email", "sms", "whatsapp", "push"];
+const STAFF = ["owner", "admin", "dispatcher"];
+
+export const EVENTS = {
+  trip_assigned: {
+    label: "Trip assigned",
+    severity: "info",
+    channels: ["in_app", "sms"],
+    roles: [],
+    title: "New trip {{tripNumber}}",
+    body: "You are assigned to trip {{tripNumber}} ({{route}}) on {{date}} at {{time}}.",
+  },
+  trip_starting_soon: {
+    label: "Trip starting soon",
+    severity: "info",
+    channels: ["in_app", "sms"],
+    roles: ["dispatcher"],
+    title: "Trip {{tripNumber}} starts soon",
+    body: "Trip {{tripNumber}} ({{route}}) departs at {{time}} and has not started yet.",
+  },
+  trip_started: {
+    label: "Trip started",
+    severity: "info",
+    channels: ["in_app"],
+    roles: STAFF,
+    title: "Trip {{tripNumber}} started",
+    body: "Trip {{tripNumber}} ({{route}}) is under way.",
+  },
+  trip_delayed: {
+    label: "Trip delayed",
+    severity: "warning",
+    channels: ["in_app", "email"],
+    roles: STAFF,
+    title: "Trip {{tripNumber}} delayed",
+    body: "Trip {{tripNumber}} ({{route}}) is delayed. Reason: {{reason}}",
+  },
+  trip_cancelled: {
+    label: "Trip cancelled",
+    severity: "warning",
+    channels: ["in_app", "sms"],
+    roles: STAFF,
+    title: "Trip {{tripNumber}} cancelled",
+    body: "Trip {{tripNumber}} ({{route}}) on {{date}} was cancelled. Reason: {{reason}}",
+  },
+  vehicle_breakdown: {
+    label: "Vehicle breakdown",
+    severity: "critical",
+    channels: ["in_app", "email", "sms"],
+    roles: STAFF,
+    title: "Breakdown: {{vehicle}}",
+    body: "{{vehicle}} reported a breakdown on trip {{tripNumber}}. {{reason}}",
+  },
+  route_changed: {
+    label: "Route changed",
+    severity: "info",
+    channels: ["in_app"],
+    roles: STAFF,
+    title: "Route {{route}} updated",
+    body: "Route {{route}} was edited (version {{version}}). {{upcoming}} upcoming trip(s) keep the previous route plan.",
+  },
+  document_expiring: {
+    label: "Document expiring",
+    severity: "warning",
+    channels: ["in_app", "email"],
+    roles: STAFF,
+    title: "{{subject}} {{document}} {{when}}",
+    body: "{{subject}}'s {{document}} {{when}} (expiry {{expiry}}).",
+  },
+  maintenance_due: {
+    label: "Maintenance due",
+    severity: "warning",
+    channels: ["in_app", "email"],
+    roles: [...STAFF, "accountant"],
+    title: "Maintenance due: {{vehicle}}",
+    body: "{{vehicle}}: {{issue}} is scheduled for {{date}}.",
+  },
+  request_approved: {
+    label: "Transport request approved",
+    severity: "info",
+    channels: ["in_app", "email"],
+    roles: [],
+    title: "Request {{number}} approved",
+    body: "Your request {{number}} was approved.",
+  },
+  request_rejected: {
+    label: "Transport request rejected",
+    severity: "info",
+    channels: ["in_app", "email"],
+    roles: [],
+    title: "Request {{number}} rejected",
+    body: "Your request {{number}} was rejected. {{reason}}",
+  },
+  test: {
+    label: "Test message",
+    severity: "info",
+    channels: ["in_app"],
+    roles: [],
+    title: "Test notification",
+    body: "This is a test from Nest Transport.",
+  },
+};
+export const EVENT_KEYS = Object.keys(EVENTS);
