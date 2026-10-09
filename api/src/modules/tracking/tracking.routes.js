@@ -308,12 +308,10 @@ r.post(
     });
     await audit(req, "gps.device.create", "GpsDevice", d.id);
     // The secret is returned once and never stored in clear text.
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: { _id: d._id, name: d.name, publicId: d.publicId, apiKey: key },
-      });
+    res.status(201).json({
+      success: true,
+      data: { _id: d._id, name: d.name, publicId: d.publicId, apiKey: key },
+    });
   }),
 );
 

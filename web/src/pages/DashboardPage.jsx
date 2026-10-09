@@ -6,6 +6,8 @@ import {
   Users,
   Wrench,
   Navigation,
+  Fuel,
+  Receipt,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -13,7 +15,7 @@ import { PageHeader, PrimaryButton } from "@/components/common/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
 import { EmptyState } from "@/components/common/DataTable";
 import { get } from "@/services/api";
-import { formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 export default function DashboardPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["dashboard"],

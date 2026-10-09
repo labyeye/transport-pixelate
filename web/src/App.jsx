@@ -7,6 +7,8 @@ import DashboardPage from "@/pages/DashboardPage";
 import VehiclesPage from "@/pages/VehiclesPage";
 import PassengersPage from "@/pages/PassengersPage";
 import TrackingPage from "@/pages/TrackingPage";
+import MaintenancePage from "@/pages/MaintenancePage";
+import FuelExpensesPage from "@/pages/FuelExpensesPage";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
@@ -84,6 +86,22 @@ export default function App() {
                 element={
                   <Protected>
                     <TrackingPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/maintenance"
+                element={
+                  <Protected>
+                    <MaintenancePage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/fuel-expenses"
+                element={
+                  <Protected>
+                    <FuelExpensesPage />
                   </Protected>
                 }
               />

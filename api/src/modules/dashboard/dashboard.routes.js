@@ -5,6 +5,10 @@ import { protect, requirePermission, orgScope } from "../../middleware/auth.js";
 import { Trip } from "../../models/Trip.js";
 import { Organization } from "../../models/Organization.js";
 import { dateInZone } from "../../utils/time.js";
+import { Maintenance } from "../../models/Maintenance.js";
+import { FuelLog } from "../../models/FuelLog.js";
+import { Expense } from "../../models/Expense.js";
+import { can } from "../../utils/permissions.js";
 import { ah } from "../../utils/asyncHandler.js";
 const r = Router();
 r.use(protect);
@@ -72,6 +76,60 @@ r.get(
         });
     }
     expiries.sort((a, b) => +a.expiryDate - +b.expiryDate);
+    const org = req.user.organization;
+    const monthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    );
+    const weekAhead = new Date(Date.now() + 7 * 86400000);
+    const maintenance = {
+      open: await Maintenance.countDocuments({
+        organization: org,
+        status: { $in: ["reported", "scheduled", "in_progress"] },
+      }),
+      inWorkshop: await Maintenance.countDocuments({
+        organization: org,
+        status: "in_progress",
+      }),
+      dueThisWeek: await Maintenance.countDocuments({
+        organization: org,
+        status: { $in: ["reported", "scheduled"] },
+        scheduledDate: { $lte: weekAhead },
+      }),
+    };
+    // Cost figures are sensitive and optional: only for roles that can read expenses.
+    let costs = null;
+    const orgDoc = await Organization.findById(org).select("modules");
+    if (orgDoc?.modules?.fuelExpenses && can(req.user.role, "expenses:read")) {
+      const sumOf = async (Model, match, field) =>
+        (
+          await Model.aggregate([
+            { $match: { organization: org, ...match } },
+            { $group: { _id: null, t: { $sum: field } } },
+          ])
+        )[0]?.t ?? 0;
+      costs = {
+        monthStart,
+        fuel: await sumOf(
+          FuelLog,
+          { filledAt: { $gte: monthStart } },
+          "$totalAmount",
+        ),
+        expenses: await sumOf(
+          Expense,
+          { status: "approved", date: { $gte: monthStart } },
+          "$amount",
+        ),
+        maintenance: await sumOf(
+          Maintenance,
+          { status: "completed", serviceDate: { $gte: monthStart } },
+          "$cost",
+        ),
+        pendingExpenses: await Expense.countDocuments({
+          organization: org,
+          status: "pending",
+        }),
+      };
+    }
     res.json({
       success: true,
       data: {
@@ -100,6 +158,8 @@ r.get(
           cancelled:
             count(tripStatus, "cancelled") + count(tripStatus, "aborted"),
         },
+        maintenance,
+        costs,
         expiries: expiries.slice(0, 20),
       },
     });

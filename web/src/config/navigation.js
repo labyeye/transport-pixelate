@@ -37,6 +37,23 @@ export const NAV_GROUPS = [
     ],
   },
   {
+    label: "Costs",
+    items: [
+      {
+        title: "Maintenance",
+        href: "/maintenance",
+        icon: Wrench,
+        permission: "maintenance:read",
+      },
+      {
+        title: "Fuel & Expenses",
+        href: "/fuel-expenses",
+        icon: Fuel,
+        permission: "expenses:read",
+      },
+    ],
+  },
+  {
     label: "Operations",
     items: [
       {
