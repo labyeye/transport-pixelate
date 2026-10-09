@@ -6,6 +6,7 @@ import { PageHeader, PrimaryButton } from "@/components/common/PageHeader";
 import { FilterSelect } from "@/components/common/SearchInput";
 import { DataTable, EmptyState } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { AttachButton, Attachments } from "@/components/common/Attachments";
 import { Modal } from "@/components/common/Modal";
 import { Field, inputCls } from "@/components/common/Field";
 import { StatCard } from "@/components/ui/StatCard";
@@ -334,6 +335,7 @@ export default function MaintenancePage() {
   const [type, setType] = useState("");
   const [form, setForm] = useState(false);
   const [move, setMove] = useState(null);
+  const [files, setFiles] = useState(null);
   const { data, isLoading, error } = useQuery({
     queryKey: ["maintenance", page, status, type],
     queryFn: () => get("/maintenance", { page, limit: 15, status, type }),
@@ -481,6 +483,14 @@ export default function MaintenancePage() {
             header: "Status",
             cell: (m) => <StatusBadge meta={STATUS[m.status]} />,
           },
+          {
+            header: "Files",
+            cell: (m) => <AttachButton onClick={() => setFiles(m)} />,
+          },
+          {
+            header: "Files",
+            cell: (m) => <AttachButton onClick={() => setFiles(m)} />,
+          },
           ...(canWrite
             ? [
                 {
@@ -504,6 +514,16 @@ export default function MaintenancePage() {
         ]}
       />
       {form && <MaintForm onClose={() => setForm(false)} />}
+      {files && (
+        <Attachments
+          ownerType="maintenance"
+          owner={files._id}
+          docType="invoice"
+          title={`Files · ${files.number}`}
+          canWrite={canWrite}
+          onClose={() => setFiles(null)}
+        />
+      )}
       {move && (
         <Move
           rec={move.rec}

@@ -90,3 +90,45 @@ export const post = (p, body) => api(p, { method: "POST", body });
 export const put = (p, body) => api(p, { method: "PUT", body });
 export const patch = (p, body) => api(p, { method: "PATCH", body });
 export const del = (p) => api(p, { method: "DELETE" });
+
+// Multipart upload (FormData). The browser sets the multipart boundary, so no Content-Type header here.
+export async function upload(path, form, method = "POST") {
+  const run = () =>
+    fetch(`${BASE}${path}`, {
+      method,
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      body: form,
+    });
+  let res = await run();
+  if (res.status === 401 && (await refresh())) res = await run();
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok)
+    throw new ApiError(
+      res.status,
+      json.message ?? "Upload failed",
+      json.errors,
+    );
+  return json;
+}
+
+// Authenticated file fetch: files have no public URL, so the browser gets a blob via the API.
+export async function openFile(
+  path,
+  { download = false, name = "document" } = {},
+) {
+  const run = () =>
+    fetch(`${BASE}${path}${download ? "?download=1" : ""}`, {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    });
+  let res = await run();
+  if (res.status === 401 && (await refresh())) res = await run();
+  if (!res.ok) throw new ApiError(res.status, "Could not open the file");
+  const url = URL.createObjectURL(await res.blob());
+  if (download) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+  } else window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}

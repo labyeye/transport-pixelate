@@ -5,6 +5,13 @@ export const errorHandler = (err, _req, res, _next) => {
       .status(err.status)
       .json({ success: false, message: err.message, errors: err.details });
   }
+  if (err?.name === "MulterError") {
+    const tooBig = err.code === "LIMIT_FILE_SIZE";
+    return res.status(tooBig ? 413 : 400).json({
+      success: false,
+      message: tooBig ? "File is too large (max 10 MB)" : "Upload failed",
+    });
+  }
   // Mongo duplicate key
   if (err?.code === 11000) {
     return res.status(409).json({

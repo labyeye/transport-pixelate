@@ -9,6 +9,7 @@ import PassengersPage from "@/pages/PassengersPage";
 import TrackingPage from "@/pages/TrackingPage";
 import MaintenancePage from "@/pages/MaintenancePage";
 import FuelExpensesPage from "@/pages/FuelExpensesPage";
+import DocumentsPage from "@/pages/DocumentsPage";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
@@ -102,6 +103,14 @@ export default function App() {
                 element={
                   <Protected>
                     <FuelExpensesPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/documents"
+                element={
+                  <Protected>
+                    <DocumentsPage />
                   </Protected>
                 }
               />

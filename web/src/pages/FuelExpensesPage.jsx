@@ -6,6 +6,7 @@ import { PageHeader, PrimaryButton } from "@/components/common/PageHeader";
 import { FilterSelect } from "@/components/common/SearchInput";
 import { DataTable, EmptyState } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { AttachButton, Attachments } from "@/components/common/Attachments";
 import { Modal } from "@/components/common/Modal";
 import { Field, inputCls } from "@/components/common/Field";
 import { StatCard } from "@/components/ui/StatCard";
@@ -498,6 +499,7 @@ export default function FuelExpensesPage() {
   const [status, setStatus] = useState("");
   const [form, setForm] = useState(null);
   const [review, setReview] = useState(null);
+  const [files, setFiles] = useState(null);
   const fuel = useQuery({
     queryKey: ["fuel", page],
     queryFn: () => get("/fuel", { page, limit: 15 }),
@@ -661,6 +663,12 @@ export default function FuelExpensesPage() {
                   </div>
                 ),
               },
+              {
+                header: "Receipt",
+                cell: (e) => (
+                  <AttachButton label="Receipts" onClick={() => setFiles(e)} />
+                ),
+              },
               ...(canApprove
                 ? [
                     {
@@ -697,6 +705,15 @@ export default function FuelExpensesPage() {
       )}
       {form === "fuel" && <FuelForm onClose={() => setForm(null)} />}
       {form === "expenses" && <ExpenseForm onClose={() => setForm(null)} />}
+      {files && (
+        <Attachments
+          ownerType="expense"
+          owner={files._id}
+          title="Receipts"
+          canWrite={canWrite && files.status === "pending"}
+          onClose={() => setFiles(null)}
+        />
+      )}
       {review && (
         <ReviewDialog
           expense={review.e}

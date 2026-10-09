@@ -15,6 +15,7 @@ import trackingRoutes from "./modules/tracking/tracking.routes.js";
 import maintenanceRoutes from "./modules/maintenance/maintenance.routes.js";
 import fuelRoutes from "./modules/finance/fuel.routes.js";
 import expenseRoutes from "./modules/finance/expenses.routes.js";
+import documentRoutes from "./modules/documents/documents.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 export function createApp(allowedOrigins) {
@@ -44,6 +45,7 @@ export function createApp(allowedOrigins) {
   app.use("/api/v1/maintenance", maintenanceRoutes);
   app.use("/api/v1/fuel", fuelRoutes);
   app.use("/api/v1/expenses", expenseRoutes);
+  app.use("/api/v1/documents", documentRoutes);
   app.use("/api/v1/dashboard", dashboardRoutes);
   app.use((_req, res) =>
     res.status(404).json({ success: false, message: "Not found" }),

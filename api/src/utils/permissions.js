@@ -29,6 +29,7 @@ export const PERMISSIONS = [
   "expenses:write",
   "expenses:approve",
   "reports:read",
+  "documents:verify",
   "settings:write",
   "users:write",
 ];

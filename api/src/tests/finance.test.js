@@ -102,16 +102,13 @@ describe("maintenance", () => {
         { name: "B", lat: 2, lng: 2 },
       ],
     });
-    const tr = await request(app)
-      .post("/api/v1/trips")
-      .set(auth(w.t))
-      .send({
-        route: route._id,
-        scheduledDate: "2030-01-15",
-        departureTime: "07:00",
-        durationMin: 60,
-        vehicle: w.vehicle._id,
-      });
+    const tr = await request(app).post("/api/v1/trips").set(auth(w.t)).send({
+      route: route._id,
+      scheduledDate: "2030-01-15",
+      departureTime: "07:00",
+      durationMin: 60,
+      vehicle: w.vehicle._id,
+    });
     expect(tr.status).toBe(409);
     expect((await mmove(w, rec._id, "completed")).status).toBe(400); // final cost required
     const done = await mmove(w, rec._id, "completed", {
@@ -215,14 +212,11 @@ describe("maintenance", () => {
     );
     expect(
       (
-        await request(app)
-          .post("/api/v1/maintenance")
-          .set(auth(other.t))
-          .send({
-            vehicle: w.vehicle._id,
-            type: "repair",
-            issue: "Steal vehicle",
-          })
+        await request(app).post("/api/v1/maintenance").set(auth(other.t)).send({
+          vehicle: w.vehicle._id,
+          type: "repair",
+          issue: "Steal vehicle",
+        })
       ).status,
     ).toBe(404);
   });
