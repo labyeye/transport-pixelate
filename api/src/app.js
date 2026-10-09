@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import authRoutes from "./modules/auth/auth.routes.js";
 import vehicleRoutes from "./modules/vehicles/vehicles.routes.js";
 import driverRoutes from "./modules/drivers/drivers.routes.js";
+import routeRoutes from "./modules/routes/routes.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 export function createApp(allowedOrigins) {
@@ -26,6 +27,7 @@ export function createApp(allowedOrigins) {
   app.use("/api/v1/auth", authRoutes);
   app.use("/api/v1/vehicles", vehicleRoutes);
   app.use("/api/v1/drivers", driverRoutes);
+  app.use("/api/v1/routes", routeRoutes);
   app.use("/api/v1/dashboard", dashboardRoutes);
   app.use((_req, res) =>
     res.status(404).json({ success: false, message: "Not found" }),

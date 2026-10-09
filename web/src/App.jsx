@@ -5,6 +5,7 @@ import { ToastProvider } from "@/hooks/use-toast";
 import AuthPage from "@/pages/AuthPage";
 import DashboardPage from "@/pages/DashboardPage";
 import VehiclesPage from "@/pages/VehiclesPage";
+import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
 const qc = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -51,6 +52,7 @@ export default function App() {
                   </Protected>
                 }
               />
+              <Route path="/routes" element={<Protected><RoutesPage /></Protected>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>

@@ -15,10 +15,14 @@ Last updated: 2026-10-09. Design reference: Nest Play (`sports-pixelate/frontend
 - Drivers/staff: CRUD, licence rules, status rules, archive safeguards.
 - Dashboard: real counts + 30-day document expiry list (vehicle docs + driver licences) + empty state.
 - Web: login/register, dashboard, vehicles, drivers/staff (list, search, filters, pagination, forms, confirm dialogs, loading/empty/error states).
-- Tests: 7 API tests passing (auth, lockout, logout invalidation, tenant isolation, assignment conflicts).
+- Routes & stops (Phase 3): Route model with embedded ordered stops, server-derived sequence, coordinate/time validation, per-org unique code, activate (needs 2 active stops), duplicate, archive (inactive only), `version` bump on edit for future trip snapshots, vehicle/driver refs checked in-org and for availability. Web: routes list + editor with Leaflet map (click to add stops, reorder, remove). Distance/duration are manual (no routing provider configured); map lines are straight, not road geometry.
+- Tests: 12 API tests passing (auth, lockout, logout invalidation, tenant isolation, assignment conflicts, routes).
+
+## Phases
+1 Foundation (done) · 2 Vehicles/drivers/dashboard (done) · 3 Routes & stops (done) · 4 Trips & dispatch · 5 Trip events & manifest · 6 GPS & live tracking · 7 Maintenance/fuel/expenses · 8 Documents & storage · 9 Notifications · 10 Transport requests · 11 Reports · 12 Settings/users/password reset · 13 Fees & billing · 14 Mobile app · 15 API docs, deploy docs, UI check
 
 ## Not started (pending)
-Routes/stops, trips & dispatch, trip events, GPS ingestion + live tracking + Socket.IO, requests, maintenance, fuel/expenses, document uploads/storage, notifications (+ providers), billing/Razorpay, reports/CSV, settings/user management UI, password reset, OpenAPI docs, mobile app (driver/attendant/parent), deployment docs.
+Trips & dispatch, trip events, GPS ingestion + live tracking + Socket.IO, requests, maintenance, fuel/expenses, document uploads/storage, notifications (+ providers), billing/Razorpay, reports/CSV, settings/user management UI, password reset, OpenAPI docs, mobile app (driver/attendant/parent), deployment docs.
 
 ## Known limitations
 - Web UI visuals have **not** been compared side-by-side with Nest Play in a browser yet; build and typecheck pass only.
