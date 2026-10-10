@@ -9,9 +9,9 @@ design system), React Native mobile app. Source of truth for design: Nest Play (
 | API tests (Vitest, in-memory MongoDB) | **147 passing** — auth, tenant isolation, every module's rules and race conditions, API-surface security guard |
 | Web tests (render every page against a mocked API) | **17 passing** |
 | Mobile tests (offline queue, API client, trip rules, GPS buffer, screens) | **25 passing**; Metro production bundle builds |
-| Lint (`no-undef`, hooks rules) | 0 errors in api, web, mobile |
+| Lint (`no-undef`, hooks rules) | 0 errors in api, web, NestTransport (mobile) |
 | Real-browser pass (Chrome, seeded data, all 15+ pages, 390 px) | Done; defects found were fixed (see `docs/UI_CONSISTENCY.md`) |
-| **Not verified** | Docker images (daemon unavailable), mobile on a device/emulator, any real GPS hardware, SMTP/Twilio/WhatsApp/Razorpay against live services |
+| **Not verified** | Docker images (daemon unavailable), mobile on a physical device or Android (iOS simulator only, Debug build, Keychain fallback path), any real GPS hardware, SMTP/Twilio/WhatsApp/Razorpay against live services |
 
 ## Features implemented
 **Foundation** — organizations (tenants), JWT auth with refresh rotation, lockout, role/permission model enforced server-side on every route, audit log, validation (Zod), rate limiting, helmet/CORS, production secret-strength checks.
@@ -76,4 +76,4 @@ live tracking · 7 Maintenance/fuel/expenses · 8 Documents · 9 Notifications �
 
 ## Docs
 `docs/API.md` · `docs/openapi.json` · `docs/DEPLOYMENT.md` · `docs/GPS_INTEGRATION.md` · `docs/NOTIFICATIONS.md` ·
-`docs/BILLING.md` · `docs/UI_CONSISTENCY.md` · `mobile/README.md` · `scripts/visual-check/README.md`
+`docs/BILLING.md` · `docs/UI_CONSISTENCY.md` · `NestTransport/README.md` · `scripts/visual-check/README.md`

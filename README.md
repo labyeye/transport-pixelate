@@ -6,7 +6,7 @@ Transport management for schools, institutions and fleets — part of the Nest p
 |---|---|
 | `api/` | Express + Mongoose API (JavaScript, ES modules), Socket.IO |
 | `web/` | React + Vite + Tailwind management dashboard |
-| `mobile/` | React Native app for drivers, attendants and managers |
+| `NestTransport/` | React Native app for drivers, attendants and managers (own git repo, not tracked here) |
 | `docs/` | API reference (generated), deployment, GPS, notifications, billing, UI consistency |
 | `scripts/visual-check/` | Seed data + browser screenshots for visual review |
 

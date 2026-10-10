@@ -49,7 +49,7 @@ cd api && cp .env.example .env && npm install && npm run dev           # needs a
 cd api && npm install && npm run dev:memory                            # in-memory, data lost on exit
 cd web && npm install && npm run dev                                   # http://localhost:5175
 ```
-Tests: `cd api && npm test` (143, uses an in-memory MongoDB), `cd web && npm test`, `cd mobile && npm test`.
+Tests: `cd api && npm test` (143, uses an in-memory MongoDB), `cd web && npm test`, `cd NestTransport && npx jest`.
 Lint: `npm run lint` in each project.
 
 ## Operations
