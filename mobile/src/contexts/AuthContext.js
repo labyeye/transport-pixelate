@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { ApiError, loadBaseUrl, restoreSession, setSignedOutHandler, signIn, signOut } from '../lib/api';
+import { ApiError, api, loadBaseUrl, restoreSession, setSignedOutHandler, signIn, signOut } from '../lib/api';
 import { secure, store } from '../lib/storage';
 import { resetForTests as clearQueue } from '../lib/queue';
 import * as tracking from '../lib/tracking';
@@ -51,6 +51,14 @@ export function AuthProvider({ children }) {
     await clearLocal();
   }, [clearLocal]);
 
-  return <Ctx.Provider value={{ user, loading, offlineRestore, login, logout }}>{children}</Ctx.Provider>;
+  const refreshUser = useCallback(async () => {
+    const res = await api.get('/auth/me');
+    await store.set('cachedUser', res.data);
+    setUser(res.data);
+  }, []);
+
+  const can = useCallback(p => !!user?.permissions?.includes(p), [user]);
+
+  return <Ctx.Provider value={{ user, loading, offlineRestore, login, logout, refreshUser, can }}>{children}</Ctx.Provider>;
 }
 export const useAuth = () => useContext(Ctx);
