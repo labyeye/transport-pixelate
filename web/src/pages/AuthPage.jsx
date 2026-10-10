@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AlertCircle, ArrowRight, MapPin, Route, Truck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { errMsg } from "@/lib/errors";
@@ -141,6 +141,14 @@ export default function AuthPage() {
                 : "Create account"}{" "}
             <ArrowRight className="w-4 h-4" />
           </button>
+          {mode === "login" && (
+            <Link
+              to="/forgot-password"
+              className="block text-sm font-semibold underline"
+            >
+              Forgot your password?
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => {

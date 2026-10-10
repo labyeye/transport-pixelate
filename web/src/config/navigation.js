@@ -1,5 +1,6 @@
 import {
   Bell,
+  Settings,
   BarChart3,
   ClipboardList,
   FileText,
@@ -123,6 +124,7 @@ export const NAV_GROUPS = [
         icon: Bell,
         permission: "",
       },
+      { title: "Settings", href: "/settings", icon: Settings, permission: "" },
     ],
   },
 ];

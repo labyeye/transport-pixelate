@@ -82,6 +82,22 @@ function route(url) {
     return { data: { accessToken: "a", refreshToken: "r" } };
   if (p === "/auth/me") return { data: USER };
   if (p === "/dashboard") return { data: DASH };
+  if (p === "/settings/organization")
+    return {
+      data: {
+        name: "Demo School",
+        category: "school",
+        currency: "INR",
+        timezone: "Asia/Kolkata",
+        gpsRetentionDays: 90,
+        modules: {
+          fuelExpenses: true,
+          passengerManifest: true,
+          billing: false,
+          parentAccess: false,
+        },
+      },
+    };
   if (p === "/reports")
     return {
       data: [
@@ -207,6 +223,8 @@ const ROUTES = [
   ["/notifications", /What gets sent/],
   ["/requests", /Transport requests/],
   ["/reports", /Reports & analytics/],
+  ["/settings", /Organization, people and security/],
+  ["/forgot-password", /Reset your password/],
 ];
 
 describe("every page renders against mocked API data", () => {
@@ -223,9 +241,11 @@ describe("every page renders against mocked API data", () => {
         () => expect(screen.getAllByText(heading).length).toBeGreaterThan(0),
         { timeout: 8000 },
       );
-      // sidebar shows every module the user may access
-      expect(screen.getAllByText("Live Tracking").length).toBeGreaterThan(0);
-      expect(screen.getAllByText("Notifications").length).toBeGreaterThan(0);
+      // signed-in pages show every module the user may access in the sidebar
+      if (!path.includes("password")) {
+        expect(screen.getAllByText("Live Tracking").length).toBeGreaterThan(0);
+        expect(screen.getAllByText("Notifications").length).toBeGreaterThan(0);
+      }
       spy.mockRestore();
       expect(
         errors.filter(

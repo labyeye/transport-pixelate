@@ -10,6 +10,11 @@ import { protect } from "../../middleware/auth.js";
 import { ah } from "../../utils/asyncHandler.js";
 import { badRequest, conflict, unauthorized } from "../../utils/errors.js";
 import { audit } from "../../models/AuditLog.js";
+import {
+  consumeToken,
+  issueToken,
+  sendSecurityEmail,
+} from "./passwordReset.service.js";
 import { ROLE_PERMISSIONS } from "../../utils/permissions.js";
 const r = Router();
 const MAX_FAILS = 5;
@@ -183,4 +188,121 @@ r.post(
     res.json({ success: true });
   }),
 );
+// ---- password reset ------------------------------------------------------------------------
+const resetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: process.env.NODE_ENV === "test" ? 1000 : 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Always answers the same way so it can't be used to discover which emails have accounts.
+r.post(
+  "/forgot-password",
+  resetLimiter,
+  validate(z.object({ email: z.string().trim().email() })),
+  ah(async (req, res) => {
+    const user = await User.findOne({
+      email: req.body.email.toLowerCase(),
+      status: "active",
+    });
+    if (user) {
+      const { link } = await issueToken(user._id, {
+        purpose: "reset",
+        ttlMinutes: 60,
+      });
+      await sendSecurityEmail({
+        org: user.organization,
+        to: user.email,
+        name: user.name,
+        subject: "Reset your Nest Transport password",
+        body: `Hi ${user.name},\n\nUse this link within 60 minutes to choose a new password:\n${link}\n\nIf you didn't ask for this, ignore this email.`,
+      });
+      await audit(
+        {
+          user: { _id: user._id, organization: user.organization },
+          ip: req.ip,
+        },
+        "auth.forgot_password",
+        "User",
+        user.id,
+      );
+    }
+    res.json({
+      success: true,
+      message: "If that email has an account, a reset link has been sent.",
+    });
+  }),
+);
+
+r.post(
+  "/reset-password",
+  resetLimiter,
+  validate(
+    z.object({
+      token: z.string().regex(/^[a-f\d]{64}$/i, "Invalid link"),
+      password: z.string().min(8).max(128),
+    }),
+  ),
+  ah(async (req, res) => {
+    const userId = await consumeToken(req.body.token);
+    if (!userId)
+      throw badRequest(
+        "This link is invalid or has expired. Request a new one.",
+      );
+    const user = await User.findById(userId);
+    if (!user || user.status !== "active")
+      throw badRequest(
+        "This link is invalid or has expired. Request a new one.",
+      );
+    user.password = await bcrypt.hash(req.body.password, 12);
+    user.tokenVersion += 1; // signs out every existing session
+    user.failedLogins = 0;
+    user.lockedUntil = undefined;
+    await user.save();
+    await audit(
+      { user: { _id: user._id, organization: user.organization }, ip: req.ip },
+      "auth.password_reset",
+      "User",
+      user.id,
+    );
+    res.json({ success: true });
+  }),
+);
+
+// ---- own account ---------------------------------------------------------------------------
+r.post(
+  "/logout-all",
+  protect,
+  ah(async (req, res) => {
+    await User.updateOne({ _id: req.user._id }, { $inc: { tokenVersion: 1 } });
+    await audit(req, "auth.logout_all", "User", req.user.id);
+    res.json({ success: true });
+  }),
+);
+
+r.put(
+  "/profile",
+  protect,
+  validate(
+    z.object({
+      name: z.string().trim().min(2).max(100),
+      phone: z
+        .string()
+        .trim()
+        .regex(/^\+?\d[\d\s-]{7,15}$/, "Invalid phone number")
+        .optional()
+        .or(z.literal("").transform(() => undefined)),
+    }),
+  ),
+  ah(async (req, res) => {
+    const u = await User.findByIdAndUpdate(
+      req.user._id,
+      { name: req.body.name, phone: req.body.phone },
+      { new: true },
+    );
+    res.json({ success: true, data: publicUser(u) });
+  }),
+);
+
 export default r;

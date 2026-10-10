@@ -13,6 +13,8 @@ import DocumentsPage from "@/pages/DocumentsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import RequestsPage from "@/pages/RequestsPage";
 import ReportsPage from "@/pages/ReportsPage";
+import SettingsPage from "@/pages/SettingsPage";
+import { ForgotPasswordPage, ResetPasswordPage } from "@/pages/PasswordPages";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
@@ -37,6 +39,8 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<AuthPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route
                 path="/"
                 element={
@@ -138,6 +142,14 @@ export default function App() {
                 element={
                   <Protected>
                     <ReportsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <Protected>
+                    <SettingsPage />
                   </Protected>
                 }
               />
