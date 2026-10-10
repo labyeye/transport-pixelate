@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
@@ -44,7 +45,15 @@ export function createApp(allowedOrigins) {
       limit: process.env.NODE_ENV === "test" ? 10_000 : 300,
     }),
   );
-  app.get("/api/v1/health", (_req, res) => res.json({ success: true }));
+  // Readiness: 503 when the database isn't connected, so load balancers stop sending traffic.
+  app.get("/api/v1/health", (_req, res) => {
+    const up = mongoose.connection.readyState === 1;
+    res.status(up ? 200 : 503).json({
+      success: up,
+      db: up ? "up" : "down",
+      uptimeSeconds: Math.round(process.uptime()),
+    });
+  });
   app.use("/api/v1/auth", authRoutes);
   app.use("/api/v1/vehicles", vehicleRoutes);
   app.use("/api/v1/drivers", driverRoutes);

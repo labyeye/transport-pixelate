@@ -1,0 +1,32 @@
+# Single-host deployment: MongoDB + API + web (nginx). Put TLS in front (Caddy/Traefik/cloud load balancer).
+#   cp api/.env.example .env   # then edit secrets
+#   docker compose up -d --build
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes: [mongo-data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  api:
+    build: ./api
+    restart: unless-stopped
+    depends_on:
+      mongo: { condition: service_healthy }
+    env_file: .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/nest-transport
+      NODE_ENV: production
+      PORT: "5100"
+    volumes: [uploads:/data/uploads]
+  web:
+    build: ./web
+    restart: unless-stopped
+    depends_on: [api]
+    ports: ["8080:80"]
+volumes:
+  mongo-data:
+  uploads:

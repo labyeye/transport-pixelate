@@ -24,13 +24,17 @@ export const protect = ah(async (req, _res, next) => {
   req.user = user;
   next();
 });
-export const requirePermission =
-  (...perms) =>
-  (req, _res, next) => {
+protect.meta = { kind: "protect" };
+
+export const requirePermission = (...perms) => {
+  const middleware = (req, _res, next) => {
     if (!req.user) return next(unauthorized());
     if (!perms.every((p) => can(req.user.role, p)))
       return next(forbidden("Insufficient permissions"));
     next();
   };
+  middleware.meta = { kind: "permission", permissions: perms };
+  return middleware;
+};
 /** Every tenant-owned query must start from this filter. */
 export const orgScope = (req) => ({ organization: req.user.organization });

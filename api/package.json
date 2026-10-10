@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "test": "vitest run",
     "dev:memory": "node src/scripts/dev-memory.js",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "docs:api": "node src/scripts/generate-docs.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
