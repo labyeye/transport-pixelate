@@ -19,9 +19,7 @@ export function AuthShell({ children }) {
         <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
         <div className="relative z-10">
-          <div className="inline-block bg-white p-2 border-2 border-black">
-            <BrandMark />
-          </div>
+          <BrandMark className="bg-white" />
         </div>
         <div className="relative z-10">
           <h1 className="text-4xl xl:text-5xl font-display font-bold text-white leading-tight mb-5">
@@ -51,7 +49,7 @@ export function AuthShell({ children }) {
       <div className="flex-1 bg-white flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex justify-center mb-8">
-            <BrandMark />
+            <BrandMark className="h-12" />
           </div>
           {children}
           <div className="flex justify-center mt-8">
