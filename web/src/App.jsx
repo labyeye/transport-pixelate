@@ -12,6 +12,7 @@ import FuelExpensesPage from "@/pages/FuelExpensesPage";
 import DocumentsPage from "@/pages/DocumentsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import RequestsPage from "@/pages/RequestsPage";
+import ReportsPage from "@/pages/ReportsPage";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
@@ -129,6 +130,14 @@ export default function App() {
                 element={
                   <Protected>
                     <RequestsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  <Protected>
+                    <ReportsPage />
                   </Protected>
                 }
               />

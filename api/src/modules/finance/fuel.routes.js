@@ -10,6 +10,7 @@ import { ah } from "../../utils/asyncHandler.js";
 import { badRequest, conflict, notFound } from "../../utils/errors.js";
 import { meta, pageQuery } from "../../utils/pagination.js";
 import { audit } from "../../models/AuditLog.js";
+import { computeEfficiency } from "./efficiency.js";
 
 const r = Router();
 r.use(protect, requireModule("fuelExpenses"));
@@ -206,34 +207,13 @@ r.get(
     const logs = await FuelLog.find({ ...orgScope(req), vehicle: v._id })
       .sort({ filledAt: 1 })
       .lean();
-    const intervals = [];
-    let anchor = null;
-    let litres = 0;
-    for (const l of logs) {
-      if (anchor) litres += l.quantity;
-      if (!l.fullTank) continue;
-      if (anchor) {
-        const km = l.odometer - anchor.odometer;
-        if (km > 0 && litres > 0)
-          intervals.push({
-            from: anchor.filledAt,
-            to: l.filledAt,
-            km,
-            litres: round2(litres),
-            kmPerUnit: round2(km / litres),
-          });
-      }
-      anchor = l;
-      litres = 0;
-    }
-    const totalKm = intervals.reduce((a, b) => a + b.km, 0);
-    const totalL = intervals.reduce((a, b) => a + b.litres, 0);
+    const { intervals, averageKmPerUnit } = computeEfficiency(logs);
     res.json({
       success: true,
       data: {
         vehicle: v,
         intervals,
-        averageKmPerUnit: totalL ? round2(totalKm / totalL) : null,
+        averageKmPerUnit,
         basis: "measured between consecutive full-tank fills",
       },
     });

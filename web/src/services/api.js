@@ -132,3 +132,23 @@ export async function openFile(
   } else window.open(url, "_blank", "noopener");
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
+
+// Authenticated download of a generated file (e.g. a CSV). `path` may already include a query string.
+export async function downloadFile(path, filename) {
+  const run = () =>
+    fetch(`${BASE}${path}`, {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    });
+  let res = await run();
+  if (res.status === 401 && (await refresh())) res = await run();
+  if (!res.ok) {
+    const j = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, j.message ?? "Download failed");
+  }
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}

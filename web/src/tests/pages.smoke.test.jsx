@@ -82,6 +82,36 @@ function route(url) {
     return { data: { accessToken: "a", refreshToken: "r" } };
   if (p === "/auth/me") return { data: USER };
   if (p === "/dashboard") return { data: DASH };
+  if (p === "/reports")
+    return {
+      data: [
+        {
+          key: "trips_daily",
+          label: "Daily trip report",
+          group: "Trips",
+          usesDateRange: true,
+        },
+      ],
+    };
+  if (p === "/reports/trips_daily")
+    return {
+      data: {
+        columns: [
+          { key: "group", label: "Date", type: "date" },
+          { key: "total", label: "Total trips", type: "number" },
+        ],
+        rows: [{ group: "2030-03-04", total: 2 }],
+        totals: { group: "Total", total: 2 },
+        notes: ["A note"],
+        generatedAt: new Date().toISOString(),
+        range: {
+          from: "2030-03-01",
+          to: "2030-03-31",
+          timezone: "Asia/Kolkata",
+        },
+      },
+      meta: { page: 1, pages: 1, total: 1 },
+    };
   if (p === "/documents/summary")
     return {
       data: {
@@ -176,6 +206,7 @@ const ROUTES = [
   ["/documents", /Documents & expiry/],
   ["/notifications", /What gets sent/],
   ["/requests", /Transport requests/],
+  ["/reports", /Reports & analytics/],
 ];
 
 describe("every page renders against mocked API data", () => {

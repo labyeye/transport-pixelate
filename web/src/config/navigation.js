@@ -1,5 +1,6 @@
 import {
   Bell,
+  BarChart3,
   ClipboardList,
   FileText,
   Fuel,
@@ -99,6 +100,17 @@ export const NAV_GROUPS = [
         href: "/fuel-expenses",
         icon: Fuel,
         permission: "expenses:read",
+      },
+    ],
+  },
+  {
+    label: "Insights",
+    items: [
+      {
+        title: "Reports",
+        href: "/reports",
+        icon: BarChart3,
+        permission: "reports:read",
       },
     ],
   },
