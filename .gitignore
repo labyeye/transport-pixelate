@@ -6,3 +6,6 @@ build/
 api/uploads/
 *.log
 .DS_Store
+
+# A separate React Native project folder that was already in this directory (not part of Nest Transport)
+/NestTransport/
