@@ -1,3 +1,4 @@
+import { WhatsAppIcon } from "@/components/common/BrandImages";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Bell, CheckCircle2, Send, XCircle } from "lucide-react";
@@ -81,6 +82,7 @@ function Preferences() {
                 })
               }
             />{" "}
+            {c === "whatsapp" && <WhatsAppIcon />}
             {CH_LABEL[c]}
           </label>
         ))}

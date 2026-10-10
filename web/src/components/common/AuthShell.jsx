@@ -1,5 +1,6 @@
 import { MapPin, Route, ShieldCheck, Truck, Users, Wallet } from "lucide-react";
 import { BrandMark } from "@/components/common/BrandMark";
+import { PoweredBy } from "@/components/common/BrandImages";
 
 const FEATURES = [
   { icon: Truck, label: "Fleet & Vehicles" },
@@ -53,6 +54,9 @@ export function AuthShell({ children }) {
             <BrandMark />
           </div>
           {children}
+          <div className="flex justify-center mt-8">
+            <PoweredBy />
+          </div>
         </div>
       </div>
     </div>
