@@ -178,16 +178,14 @@ r.post(
     }
     const invite = await inviteLink(req, user, { purpose: "invite" });
     await audit(req, "user.create", "User", user.id, { role: b.role });
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: sanitize({
-          ...user.toObject(),
-          driver: driver && { _id: driver._id, name: driver.name },
-        }),
-        invite,
-      });
+    res.status(201).json({
+      success: true,
+      data: sanitize({
+        ...user.toObject(),
+        driver: driver && { _id: driver._id, name: driver.name },
+      }),
+      invite,
+    });
   }),
 );
 

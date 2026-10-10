@@ -21,6 +21,7 @@ import requestRoutes from "./modules/requests/requests.routes.js";
 import reportRoutes from "./modules/reports/reports.routes.js";
 import userRoutes from "./modules/users/users.routes.js";
 import settingsRoutes from "./modules/settings/settings.routes.js";
+import billingRoutes from "./modules/billing/billing.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 export function createApp(allowedOrigins) {
@@ -28,6 +29,11 @@ export function createApp(allowedOrigins) {
   app.set("trust proxy", 1);
   app.use(helmet());
   app.use(cors({ origin: allowedOrigins, credentials: true }));
+  // Webhook signatures are computed over the exact bytes received, so this path must not be JSON-parsed first.
+  app.use(
+    "/api/v1/billing/razorpay/webhook",
+    express.raw({ type: "*/*", limit: "100kb" }),
+  );
   app.use(express.json({ limit: "1mb" }));
   if (process.env.NODE_ENV !== "test") app.use(morgan("tiny"));
   app.use(
@@ -56,6 +62,7 @@ export function createApp(allowedOrigins) {
   app.use("/api/v1/reports", reportRoutes);
   app.use("/api/v1/users", userRoutes);
   app.use("/api/v1/settings", settingsRoutes);
+  app.use("/api/v1/billing", billingRoutes);
   app.use("/api/v1/dashboard", dashboardRoutes);
   app.use((_req, res) =>
     res.status(404).json({ success: false, message: "Not found" }),

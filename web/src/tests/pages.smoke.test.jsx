@@ -82,6 +82,20 @@ function route(url) {
     return { data: { accessToken: "a", refreshToken: "r" } };
   if (p === "/auth/me") return { data: USER };
   if (p === "/dashboard") return { data: DASH };
+  if (p === "/billing/config")
+    return {
+      data: {
+        currency: "INR",
+        razorpay: { enabled: false, keyId: null, webhook: false },
+      },
+    };
+  if (p === "/billing/outstanding")
+    return {
+      data: {
+        rows: [],
+        totals: { balance: 0, current: 0, d1_30: 0, d31_60: 0, d61_plus: 0 },
+      },
+    };
   if (p === "/settings/organization")
     return {
       data: {
@@ -224,6 +238,7 @@ const ROUTES = [
   ["/requests", /Transport requests/],
   ["/reports", /Reports & analytics/],
   ["/settings", /Organization, people and security/],
+  ["/billing", /Transport fees & billing/],
   ["/forgot-password", /Reset your password/],
 ];
 

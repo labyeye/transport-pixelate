@@ -78,13 +78,11 @@ beforeEach(() => {
 describe("user management", () => {
   it("creates users with an invitation link; nobody ever knows the initial password", async () => {
     const w = await world("u1@x.com");
-    const res = await w
-      .api("post", "/api/v1/users")
-      .send({
-        name: "Dina Dispatcher",
-        email: "dina@x.com",
-        role: "dispatcher",
-      });
+    const res = await w.api("post", "/api/v1/users").send({
+      name: "Dina Dispatcher",
+      email: "dina@x.com",
+      role: "dispatcher",
+    });
     expect(res.status).toBe(201);
     expect(res.body.invite.link).toMatch(
       /\/reset-password\?token=[a-f\d]{64}$/,
@@ -247,22 +245,18 @@ describe("user management", () => {
     const w = await world("u5@x.com");
     const other = await world("u5b@x.com");
     const d1 = (
-      await w
-        .api("post", "/api/v1/drivers")
-        .send({
-          name: "Dev Driver",
-          phone: "9876543210",
-          licence: { number: "LU1", expiryDate: "2035-01-01" },
-        })
+      await w.api("post", "/api/v1/drivers").send({
+        name: "Dev Driver",
+        phone: "9876543210",
+        licence: { number: "LU1", expiryDate: "2035-01-01" },
+      })
     ).body.data;
     const d2 = (
-      await w
-        .api("post", "/api/v1/drivers")
-        .send({
-          name: "Other Driver",
-          phone: "9876543211",
-          licence: { number: "LU2", expiryDate: "2035-01-01" },
-        })
+      await w.api("post", "/api/v1/drivers").send({
+        name: "Other Driver",
+        phone: "9876543211",
+        licence: { number: "LU2", expiryDate: "2035-01-01" },
+      })
     ).body.data;
     const a = await w.addUser("driver", "u5-a@x.com", { driver: d1._id });
     expect((await Driver.findById(d1._id)).user.toString()).toBe(a.id);
@@ -290,14 +284,12 @@ describe("user management", () => {
         .status,
     ).toBe(404);
     expect((await other.api("get", "/api/v1/users")).body.data).toHaveLength(1); // only their own owner
-    const stolen = await other
-      .api("post", "/api/v1/users")
-      .send({
-        name: "Spy",
-        email: "spy@x.com",
-        role: "viewer",
-        driver: d1._id,
-      });
+    const stolen = await other.api("post", "/api/v1/users").send({
+      name: "Spy",
+      email: "spy@x.com",
+      role: "viewer",
+      driver: d1._id,
+    });
     expect(stolen.status).toBe(404);
   });
 });
@@ -430,14 +422,12 @@ describe("organization settings & audit trail", () => {
     expect(
       (await w.api("put", "/api/v1/settings/organization").send({})).status,
     ).toBe(400);
-    const ok = await w
-      .api("put", "/api/v1/settings/organization")
-      .send({
-        name: "Greenfield School",
-        timezone: "Asia/Dubai",
-        currency: "AED",
-        modules: { fuelExpenses: false },
-      });
+    const ok = await w.api("put", "/api/v1/settings/organization").send({
+      name: "Greenfield School",
+      timezone: "Asia/Dubai",
+      currency: "AED",
+      modules: { fuelExpenses: false },
+    });
     expect(ok.body.data).toMatchObject({
       name: "Greenfield School",
       timezone: "Asia/Dubai",

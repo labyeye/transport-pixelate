@@ -8,6 +8,8 @@ import { Route } from "../../models/Route.js";
 import { Maintenance } from "../../models/Maintenance.js";
 import { FuelLog } from "../../models/FuelLog.js";
 import { Expense } from "../../models/Expense.js";
+import { Payment } from "../../models/Payment.js";
+import { Invoice } from "../../models/Invoice.js";
 import { zonedToUtc } from "../../utils/time.js";
 import { computeEfficiency } from "../finance/efficiency.js";
 import { DAY, daysLeft, soonWindow } from "../documents/documents.service.js";
@@ -781,6 +783,113 @@ async function documentExpiry(ctx) {
   };
 }
 
+// ---------- fees (amounts are stored in minor units; reports show major units) --------------
+const major = (n) => Math.round(n) / 100;
+
+async function feeCollection(ctx) {
+  const { start, endExclusive } = bounds(ctx);
+  const pays = await Payment.find({
+    organization: ctx.org,
+    receivedAt: { $gte: start, $lt: endExclusive },
+  })
+    .populate("passenger", "name")
+    .populate("invoice", "number period")
+    .sort({ receivedAt: -1 })
+    .limit(ctx.cap + 1)
+    .lean();
+  const rows = pays.slice(0, ctx.cap).map((p) => ({
+    receipt: p.number,
+    receivedAt: p.receivedAt,
+    passenger: p.passenger?.name ?? "",
+    invoice: p.invoice?.number ?? "",
+    period: p.invoice?.period ?? "",
+    method: p.method,
+    reference: p.reference ?? "",
+    amount: major(p.amount),
+    refunded: major(p.refundedAmount),
+    net: major(p.amount - p.refundedAmount),
+    reconciled: p.reconciled?.at ? "Yes" : "No",
+  }));
+  const sum = (k) => Math.round(rows.reduce((a, r) => a + r[k], 0) * 100) / 100;
+  const byMethod = {};
+  for (const r of rows)
+    byMethod[r.method] =
+      Math.round(((byMethod[r.method] ?? 0) + r.net) * 100) / 100;
+  return {
+    columns: [
+      { key: "receipt", label: "Receipt" },
+      { key: "receivedAt", label: "Received", type: "date" },
+      { key: "passenger", label: "Passenger" },
+      { key: "invoice", label: "Invoice" },
+      { key: "period", label: "Period" },
+      { key: "method", label: "Method" },
+      { key: "reference", label: "Reference" },
+      { key: "amount", label: "Amount", type: "money" },
+      { key: "refunded", label: "Refunded", type: "money" },
+      { key: "net", label: "Net", type: "money" },
+      { key: "reconciled", label: "Reconciled" },
+    ],
+    rows,
+    totals: {
+      receipt: "Total",
+      amount: sum("amount"),
+      refunded: sum("refunded"),
+      net: sum("net"),
+    },
+    notes: [
+      `Net by method: ${
+        Object.entries(byMethod)
+          .map(([m, v]) => `${m} ${v}`)
+          .join(", ") || "none"
+      }.`,
+      "Amounts are in the organization's currency. Unreconciled payments have not yet been matched to a bank or cash record.",
+    ],
+    truncated: pays.length > ctx.cap,
+  };
+}
+
+async function feeOutstanding(ctx) {
+  const invs = await Invoice.find({
+    organization: ctx.org,
+    status: { $in: ["issued", "partially_paid"] },
+    balance: { $gt: 0 },
+  })
+    .populate("passenger", "name identifier")
+    .sort({ dueDate: 1 })
+    .limit(ctx.cap + 1)
+    .lean();
+  const now = Date.now();
+  const rows = invs.slice(0, ctx.cap).map((i) => ({
+    invoice: i.number,
+    passenger: i.passenger?.name ?? "",
+    period: i.period,
+    dueDate: i.dueDate,
+    total: major(i.total),
+    paid: major(i.paid),
+    balance: major(i.balance),
+    daysOverdue: Math.max(0, Math.floor((now - +i.dueDate) / 86400000)),
+  }));
+  return {
+    columns: [
+      { key: "invoice", label: "Invoice" },
+      { key: "passenger", label: "Passenger" },
+      { key: "period", label: "Period" },
+      { key: "dueDate", label: "Due", type: "date" },
+      { key: "total", label: "Total", type: "money" },
+      { key: "paid", label: "Paid", type: "money" },
+      { key: "balance", label: "Balance", type: "money" },
+      { key: "daysOverdue", label: "Days overdue", type: "number" },
+    ],
+    rows,
+    totals: {
+      invoice: "Total",
+      balance: Math.round(rows.reduce((a, r) => a + r.balance, 0) * 100) / 100,
+    },
+    notes: ["As of today; the date range does not apply."],
+    truncated: invs.length > ctx.cap,
+  };
+}
+
 export const REPORTS = {
   trips_daily: {
     label: "Daily trip report",
@@ -878,6 +987,21 @@ export const REPORTS = {
     needs: ["expenses:read"],
     module: "fuelExpenses",
     run: vehicleExpenses,
+  },
+  fee_collection: {
+    label: "Fee collection",
+    group: "Fees",
+    needs: ["billing:read"],
+    module: "billing",
+    run: feeCollection,
+  },
+  fee_outstanding: {
+    label: "Outstanding fees",
+    group: "Fees",
+    needs: ["billing:read"],
+    module: "billing",
+    noRange: true,
+    run: feeOutstanding,
   },
   document_expiry: {
     label: "Document expiry",

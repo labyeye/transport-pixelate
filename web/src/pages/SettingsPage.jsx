@@ -33,7 +33,7 @@ const ROLE_NOTE = {
 const MODULES = [
   ["fuelExpenses", "Fuel & expenses"],
   ["passengerManifest", "Passenger manifests"],
-  ["billing", "Transport fees & billing (not built yet)"],
+  ["billing", "Transport fees & billing"],
   ["parentAccess", "Parent access (not built yet)"],
 ];
 

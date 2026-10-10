@@ -15,6 +15,7 @@ import RequestsPage from "@/pages/RequestsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import { ForgotPasswordPage, ResetPasswordPage } from "@/pages/PasswordPages";
+import BillingPage from "@/pages/BillingPage";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
@@ -150,6 +151,14 @@ export default function App() {
                 element={
                   <Protected>
                     <SettingsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/billing"
+                element={
+                  <Protected>
+                    <BillingPage />
                   </Protected>
                 }
               />

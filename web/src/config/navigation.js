@@ -1,5 +1,6 @@
 import {
   Bell,
+  CreditCard,
   Settings,
   BarChart3,
   ClipboardList,
@@ -101,6 +102,17 @@ export const NAV_GROUPS = [
         href: "/fuel-expenses",
         icon: Fuel,
         permission: "expenses:read",
+      },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      {
+        title: "Transport Fees",
+        href: "/billing",
+        icon: CreditCard,
+        permission: "billing:read",
       },
     ],
   },
