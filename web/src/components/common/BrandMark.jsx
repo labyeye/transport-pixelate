@@ -8,7 +8,7 @@ export function BrandMark({ collapsed }) {
         <div className="w-9 h-9 border-2 border-black bg-[#024BAB] flex items-center justify-center shrink-0">
           <Truck className="w-5 h-5 text-white" />
         </div>
-        <span className="font-display font-bold text-lg leading-none">
+        <span className="font-display font-bold text-lg leading-none text-black whitespace-nowrap">
           Nest <span className="text-[#FA731C]">Transport</span>
         </span>
       </div>

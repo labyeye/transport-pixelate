@@ -3,32 +3,47 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { post } from "@/services/api";
 import { errMsg } from "@/lib/errors";
-import { Field, inputCls } from "@/components/common/Field";
-import { BrandMark } from "@/components/common/BrandMark";
+import {
+  AuthShell,
+  authButton,
+  authInput,
+  authLabel,
+} from "@/components/common/AuthShell";
 
 function Shell({ title, children }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-6">
-      <div className="w-full max-w-sm border-2 border-black bg-white p-6 space-y-4">
-        <BrandMark />
-        <h1 className="text-xl font-bold">{title}</h1>
+    <AuthShell>
+      <div className="mb-8">
+        <h2 className="text-2xl sm:text-3xl font-display font-bold text-black">
+          {title}
+        </h2>
+      </div>
+      <div className="space-y-5">
         {children}
         <Link
           to="/login"
-          className="flex items-center gap-1 text-sm font-semibold underline"
+          className="flex items-center gap-1 text-xs font-bold text-[#024BAB] hover:underline"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to sign in
         </Link>
       </div>
-    </div>
+    </AuthShell>
   );
 }
+
 const Alert = ({ children }) => (
   <div
     role="alert"
-    className="flex items-start gap-2 border-2 border-[#EF4444] bg-red-50 p-3 text-sm font-semibold text-red-700"
+    className="flex items-center gap-2 bg-red-50 border-2 border-red-400 text-red-600 text-sm px-3 py-2.5"
   >
-    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" /> {children}
+    <AlertCircle className="w-4 h-4 shrink-0" />
+    <span className="font-medium">{children}</span>
+  </div>
+);
+const Done = ({ children }) => (
+  <div className="flex gap-2 text-sm font-semibold border-2 border-black bg-green-50 p-3">
+    <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />{" "}
+    <span>{children}</span>
   </div>
 );
 
@@ -53,29 +68,31 @@ export function ForgotPasswordPage() {
   return (
     <Shell title="Reset your password">
       {done ? (
-        <div className="flex gap-2 text-sm font-semibold border-2 border-black bg-green-50 p-3">
-          <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" /> If
-          that email has an account, a reset link is on its way. The link works
-          for 60 minutes. If nothing arrives, ask your administrator for a reset
+        <Done>
+          If that email has an account, a reset link is on its way. It works for
+          60 minutes. If nothing arrives, ask your administrator for a reset
           link.
-        </div>
+        </Done>
       ) : (
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-5">
           {error && <Alert>{error}</Alert>}
-          <Field label="Email" required>
+          <div>
+            <label className={authLabel} htmlFor="fp-email">
+              Email
+            </label>
             <input
+              id="fp-email"
               required
               type="email"
               autoComplete="email"
-              className={inputCls}
+              autoFocus
+              className={authInput}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your Email address"
             />
-          </Field>
-          <button
-            disabled={busy}
-            className="w-full border-2 border-black bg-[#024BAB] text-white py-2.5 font-bold disabled:opacity-60"
-          >
+          </div>
+          <button disabled={busy} className={authButton}>
             {busy ? "Sending…" : "Send reset link"}
           </button>
         </form>
@@ -120,39 +137,42 @@ export function ResetPasswordPage() {
   return (
     <Shell title="Choose a new password">
       {done ? (
-        <div className="flex gap-2 text-sm font-semibold border-2 border-black bg-green-50 p-3">
-          <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />{" "}
-          Password saved. Taking you to sign in…
-        </div>
+        <Done>Password saved. Taking you to sign in…</Done>
       ) : (
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-5">
           {error && <Alert>{error}</Alert>}
-          <Field label="New password (min 8 characters)" required>
+          <div>
+            <label className={authLabel} htmlFor="np1">
+              New password (min 8 characters)
+            </label>
             <input
+              id="np1"
               required
               minLength={8}
               type="password"
               autoComplete="new-password"
-              className={inputCls}
+              autoFocus
+              className={authInput}
               value={pw}
               onChange={(e) => setPw(e.target.value)}
             />
-          </Field>
-          <Field label="Repeat password" required>
+          </div>
+          <div>
+            <label className={authLabel} htmlFor="np2">
+              Repeat password
+            </label>
             <input
+              id="np2"
               required
               minLength={8}
               type="password"
               autoComplete="new-password"
-              className={inputCls}
+              className={authInput}
               value={pw2}
               onChange={(e) => setPw2(e.target.value)}
             />
-          </Field>
-          <button
-            disabled={busy}
-            className="w-full border-2 border-black bg-[#024BAB] text-white py-2.5 font-bold disabled:opacity-60"
-          >
+          </div>
+          <button disabled={busy} className={authButton}>
             {busy ? "Saving…" : "Save password"}
           </button>
         </form>

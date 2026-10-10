@@ -162,7 +162,7 @@
   }
 
   .nb-badge {
-    @apply border-2 border-black font-bold text-xs px-2 py-0.5;
+    @apply border-2 border-black font-bold text-xs px-2 py-0.5 whitespace-nowrap inline-block;
     box-shadow: 2px 2px 0px #0a0a0a;
   }
 

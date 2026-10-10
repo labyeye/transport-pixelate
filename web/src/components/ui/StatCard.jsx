@@ -32,7 +32,7 @@ export function StatCard({
         <Icon className="w-5 h-5" style={{ color }} />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider truncate">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider leading-tight break-words">
           {label}
         </p>
         <p className="text-2xl font-bold text-black">{value}</p>

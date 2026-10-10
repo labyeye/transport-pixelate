@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowRight, MapPin, Route, Truck } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { errMsg } from "@/lib/errors";
-import { Field, inputCls } from "@/components/common/Field";
-import { BrandMark } from "@/components/common/BrandMark";
+import {
+  AuthShell,
+  authButton,
+  authInput,
+  authLabel,
+} from "@/components/common/AuthShell";
+
 export default function AuthPage() {
   const { user, login, register } = useAuth();
   const navigate = useNavigate();
@@ -16,10 +21,15 @@ export default function AuthPage() {
     email: "",
     password: "",
   });
+  const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   if (user) return <Navigate to="/" replace />;
-  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+
+  const set = (k) => (e) => {
+    setF({ ...f, [k]: e.target.value });
+    setError("");
+  };
   const submit = async (e) => {
     e.preventDefault();
     setError("");
@@ -34,135 +44,161 @@ export default function AuthPage() {
       setBusy(false);
     }
   };
+  const register_ = mode === "register";
+
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-background">
-      <div className="hidden lg:flex flex-col justify-between bg-[#024BAB] border-r-2 border-black p-10 text-white">
-        <div className="bg-white inline-block self-start p-2 border-2 border-black">
-          <BrandMark />
+    <AuthShell>
+      <div className="mb-8">
+        <h2 className="text-2xl sm:text-3xl font-display font-bold text-black">
+          {register_ ? "Create your organization" : "Welcome back"}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1 font-medium">
+          {register_
+            ? "Set up Nest Transport for your fleet"
+            : "Sign in to your workspace"}
+        </p>
+      </div>
+      {error && (
+        <div
+          role="alert"
+          className="flex items-center gap-2 bg-red-50 border-2 border-red-400 text-red-600 text-sm px-3 py-2.5 mb-5"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span className="font-medium">{error}</span>
+        </div>
+      )}
+      <form onSubmit={submit} className="space-y-5">
+        {register_ && (
+          <>
+            <div>
+              <label className={authLabel} htmlFor="org">
+                Organization name
+              </label>
+              <input
+                id="org"
+                required
+                className={authInput}
+                value={f.organizationName}
+                onChange={set("organizationName")}
+                placeholder="e.g. Greenfield Public School"
+              />
+            </div>
+            <div>
+              <label className={authLabel} htmlFor="cat">
+                Type
+              </label>
+              <select
+                id="cat"
+                className={authInput}
+                value={f.category}
+                onChange={set("category")}
+              >
+                <option value="school">School</option>
+                <option value="employee">Employee transport</option>
+                <option value="institution">Institution</option>
+                <option value="contractor">Transport contractor</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className={authLabel} htmlFor="name">
+                Your name
+              </label>
+              <input
+                id="name"
+                required
+                className={authInput}
+                value={f.name}
+                onChange={set("name")}
+              />
+            </div>
+          </>
+        )}
+        <div>
+          <label className={authLabel} htmlFor="email">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            autoFocus
+            className={authInput}
+            value={f.email}
+            onChange={set("email")}
+            placeholder="Enter your Email address"
+          />
         </div>
         <div>
-          <h1 className="text-4xl font-bold mb-4">
-            Run your fleet from one place.
-          </h1>
-          <ul className="space-y-3 font-semibold">
-            <li className="flex gap-2">
-              <Truck className="w-5 h-5" /> Vehicles, drivers and documents
-            </li>
-            <li className="flex gap-2">
-              <Route className="w-5 h-5" /> Routes, stops and trip dispatch
-            </li>
-            <li className="flex gap-2">
-              <MapPin className="w-5 h-5" /> Live tracking with honest freshness
-            </li>
-          </ul>
-        </div>
-        <p className="text-sm opacity-80">Part of the Nest product family.</p>
-      </div>
-      <div className="flex items-center justify-center p-6">
-        <form
-          onSubmit={submit}
-          className="w-full max-w-sm border-2 border-black bg-white p-6 space-y-4"
-        >
-          <h2 className="text-2xl font-bold">
-            {mode === "login" ? "Sign in" : "Create your organization"}
-          </h2>
-          {error && (
-            <div
-              role="alert"
-              className="flex items-start gap-2 border-2 border-[#EF4444] bg-red-50 p-3 text-sm font-semibold text-red-700"
-            >
-              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" /> {error}
-            </div>
-          )}
-          {mode === "register" && (
-            <>
-              <Field label="Organization name" required>
-                <input
-                  required
-                  className={inputCls}
-                  value={f.organizationName}
-                  onChange={set("organizationName")}
-                />
-              </Field>
-              <Field label="Type">
-                <select
-                  className={inputCls}
-                  value={f.category}
-                  onChange={set("category")}
-                >
-                  <option value="school">School</option>
-                  <option value="employee">Employee transport</option>
-                  <option value="institution">Institution</option>
-                  <option value="contractor">Transport contractor</option>
-                  <option value="other">Other</option>
-                </select>
-              </Field>
-              <Field label="Your name" required>
-                <input
-                  required
-                  className={inputCls}
-                  value={f.name}
-                  onChange={set("name")}
-                />
-              </Field>
-            </>
-          )}
-          <Field label="Email" required>
+          <label className={authLabel} htmlFor="password">
+            Password
+          </label>
+          <div className="flex border-2 border-black focus-within:border-[#024BAB] transition-colors">
             <input
+              id="password"
+              type={showPw ? "text" : "password"}
               required
-              type="email"
-              className={inputCls}
-              value={f.email}
-              onChange={set("email")}
-              autoComplete="email"
-            />
-          </Field>
-          <Field label="Password" required>
-            <input
-              required
-              type="password"
-              minLength={mode === "register" ? 8 : 1}
-              className={inputCls}
+              minLength={register_ ? 8 : 1}
+              autoComplete={register_ ? "new-password" : "current-password"}
+              className="flex-1 px-4 py-3 bg-white text-sm font-medium outline-none"
               value={f.password}
               onChange={set("password")}
-              autoComplete={
-                mode === "login" ? "current-password" : "new-password"
-              }
+              placeholder="Enter your Password"
             />
-          </Field>
-          <button
-            disabled={busy}
-            className="w-full border-2 border-black bg-[#024BAB] text-white py-2.5 font-bold flex items-center justify-center gap-2 hover:bg-[#01368A] disabled:opacity-60"
-          >
-            {busy
-              ? "Please wait…"
-              : mode === "login"
-                ? "Sign in"
-                : "Create account"}{" "}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-          {mode === "login" && (
+            <button
+              type="button"
+              aria-label={showPw ? "Hide password" : "Show password"}
+              onClick={() => setShowPw(!showPw)}
+              className="px-3 border-l-2 border-black hover:bg-gray-50 transition-colors"
+            >
+              {showPw ? (
+                <EyeOff className="w-4 h-4 text-black" />
+              ) : (
+                <Eye className="w-4 h-4 text-black" />
+              )}
+            </button>
+          </div>
+        </div>
+        {mode === "login" && (
+          <div className="flex justify-end">
             <Link
               to="/forgot-password"
-              className="block text-sm font-semibold underline"
+              className="text-xs font-bold text-[#024BAB] hover:underline"
             >
-              Forgot your password?
+              Forgot password?
             </Link>
+          </div>
+        )}
+        <button type="submit" disabled={busy} className={authButton}>
+          {busy ? (
+            <>
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
+              {register_ ? "Creating…" : "Signing in…"}
+            </>
+          ) : (
+            <>
+              {register_ ? "Create account" : "Sign In"}{" "}
+              <ArrowRight className="w-4 h-4" />
+            </>
           )}
+        </button>
+      </form>
+      <div className="mt-6 pt-6 border-t-2 border-black/10 text-center">
+        <p className="text-xs text-gray-500">
+          {register_ ? "Already have an account? " : "New to Nest Transport? "}
           <button
             type="button"
             onClick={() => {
-              setMode(mode === "login" ? "register" : "login");
+              setMode(register_ ? "login" : "register");
               setError("");
             }}
-            className="text-sm font-semibold underline"
+            className="font-bold text-[#024BAB] hover:underline"
           >
-            {mode === "login"
-              ? "New here? Create an organization"
-              : "Already have an account? Sign in"}
+            {register_ ? "Sign in" : "Create an account"}
           </button>
-        </form>
+        </p>
       </div>
-    </div>
+    </AuthShell>
   );
 }

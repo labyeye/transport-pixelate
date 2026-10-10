@@ -26,7 +26,9 @@ export const DRIVER_STATUS = {
 export function StatusBadge({ meta }) {
   if (!meta) return null;
   return (
-    <span className={`nb-badge uppercase ${TONES[meta.tone]}`}>
+    <span
+      className={`nb-badge uppercase whitespace-nowrap ${TONES[meta.tone]}`}
+    >
       {meta.label}
     </span>
   );

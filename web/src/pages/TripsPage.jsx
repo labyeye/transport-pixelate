@@ -1159,6 +1159,7 @@ export default function TripsPage() {
                       {t.tripNumber}
                     </button>
                   ),
+                  className: "whitespace-nowrap",
                 },
                 {
                   header: "Route",

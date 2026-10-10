@@ -292,7 +292,7 @@ export default function ReportsPage() {
                           {data.columns.map((c) => (
                             <td
                               key={c.key}
-                              className={`px-4 py-2.5 ${c.type === "number" || c.type === "money" ? "text-right tabular-nums" : ""}`}
+                              className={`px-4 py-2.5 whitespace-nowrap ${c.type === "number" || c.type === "money" ? "text-right tabular-nums" : ""}`}
                             >
                               {fmt(c, r[c.key])}
                             </td>

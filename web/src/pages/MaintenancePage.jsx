@@ -487,10 +487,6 @@ export default function MaintenancePage() {
             header: "Files",
             cell: (m) => <AttachButton onClick={() => setFiles(m)} />,
           },
-          {
-            header: "Files",
-            cell: (m) => <AttachButton onClick={() => setFiles(m)} />,
-          },
           ...(canWrite
             ? [
                 {
