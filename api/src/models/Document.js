@@ -7,6 +7,7 @@ export const OWNER_TYPES = [
   "expense",
   "maintenance",
   "fuel",
+  "request",
 ];
 export const DOC_TYPES = [
   "registration",

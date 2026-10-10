@@ -77,13 +77,21 @@ export const EVENTS = {
     title: "Maintenance due: {{vehicle}}",
     body: "{{vehicle}}: {{issue}} is scheduled for {{date}}.",
   },
+  request_submitted: {
+    label: "Transport request submitted",
+    severity: "info",
+    channels: ["in_app"],
+    roles: ["owner", "admin", "dispatcher"],
+    title: "New request {{number}}",
+    body: "{{requester}} submitted {{type}} request {{number}} ({{priority}} priority).",
+  },
   request_approved: {
     label: "Transport request approved",
     severity: "info",
     channels: ["in_app", "email"],
     roles: [],
     title: "Request {{number}} approved",
-    body: "Your request {{number}} was approved.",
+    body: "Your request {{number}} was approved. {{result}}",
   },
   request_rejected: {
     label: "Transport request rejected",

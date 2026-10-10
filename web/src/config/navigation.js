@@ -1,5 +1,6 @@
 import {
   Bell,
+  ClipboardList,
   FileText,
   Fuel,
   LayoutDashboard,
@@ -75,6 +76,12 @@ export const NAV_GROUPS = [
         href: "/passengers",
         icon: UserRound,
         permission: "passengers:read",
+      },
+      {
+        title: "Requests",
+        href: "/requests",
+        icon: ClipboardList,
+        permission: "requests:create",
       },
     ],
   },

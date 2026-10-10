@@ -14,6 +14,7 @@ import { can } from "../../utils/permissions.js";
 import * as storage from "./storage.js";
 import { safeName, sniff } from "./sniff.js";
 import {
+  assertRequestAccess,
   DAY,
   OWNER_PERMS,
   expiryStatus,
@@ -163,9 +164,16 @@ r.get(
   ah(async (req, res) => {
     const q = req.query;
     // Listing across owner types requires read access to each; filter to what the caller may see.
-    const allowed = OWNER_TYPES.filter((t) =>
-      can(req.user.role, OWNER_PERMS[t][0]),
+    // Request attachments are never listed in bulk; they need an explicit owner the caller may access.
+    const allowed = OWNER_TYPES.filter(
+      (t) => t !== "request" && can(req.user.role, OWNER_PERMS[t][0]),
     );
+    if (q.ownerType === "request") {
+      if (!q.owner || !can(req.user.role, OWNER_PERMS.request[0]))
+        throw forbidden("Insufficient permissions");
+      await assertRequestAccess(req, q.owner);
+      allowed.push("request");
+    }
     if (q.ownerType && !allowed.includes(q.ownerType))
       throw forbidden("Insufficient permissions");
     const { soonDays } = await soonWindow(req.user.organization);
@@ -248,6 +256,7 @@ r.post(
       throw badRequest("Owner is required");
     if (!(await ownerExists(req.user.organization, b.ownerType, b.owner)))
       throw notFound("Owner not found");
+    if (b.ownerType === "request") await assertRequestAccess(req, b.owner);
     checkDates(b);
     const file = await readFile(req);
     let doc;
@@ -280,6 +289,7 @@ async function load(req, kind) {
   }).select("+file.storageKey");
   if (!doc) throw notFound("Document not found");
   guard(req, doc.ownerType, kind);
+  if (doc.ownerType === "request") await assertRequestAccess(req, doc.owner);
   return doc;
 }
 

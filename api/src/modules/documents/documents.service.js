@@ -4,12 +4,16 @@ import { Driver } from "../../models/Driver.js";
 import { Expense } from "../../models/Expense.js";
 import { Maintenance } from "../../models/Maintenance.js";
 import { FuelLog } from "../../models/FuelLog.js";
+import { TransportRequest } from "../../models/TransportRequest.js";
+import { can } from "../../utils/permissions.js";
+import { forbidden } from "../../utils/errors.js";
 import { Organization } from "../../models/Organization.js";
 
 export const DAY = 86400000;
 
 // Which permission guards each kind of owner (read / write).
 export const OWNER_PERMS = {
+  request: ["requests:create", "requests:create"],
   vehicle: ["vehicles:read", "vehicles:write"],
   driver: ["drivers:read", "drivers:write"],
   organization: ["vehicles:read", "settings:write"],
@@ -18,6 +22,7 @@ export const OWNER_PERMS = {
   fuel: ["expenses:read", "expenses:write"],
 };
 const MODELS = {
+  request: TransportRequest,
   vehicle: Vehicle,
   driver: Driver,
   expense: Expense,
@@ -119,4 +124,18 @@ export async function findReminderDue(org, now = Date.now()) {
     });
   }
   return out;
+}
+
+/**
+ * Request attachments are visible only to the requester and to reviewers. The role-level check in the
+ * documents module is not enough on its own because any driver may file requests.
+ */
+export async function assertRequestAccess(req, ownerId) {
+  if (can(req.user.role, "requests:review")) return;
+  const mine = await TransportRequest.exists({
+    _id: ownerId,
+    organization: req.user.organization,
+    requester: req.user._id,
+  });
+  if (!mine) throw forbidden("Insufficient permissions");
 }

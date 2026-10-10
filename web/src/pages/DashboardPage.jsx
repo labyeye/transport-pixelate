@@ -8,6 +8,7 @@ import {
   Navigation,
   Fuel,
   Receipt,
+  ClipboardList,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -141,6 +142,14 @@ export default function DashboardPage() {
                 label="Pending expenses"
                 value={data.costs.pendingExpenses}
                 icon={Receipt}
+                color="#FA731C"
+              />
+            )}
+            {data.requests && (
+              <StatCard
+                label="Requests to review"
+                value={data.requests.pending}
+                icon={ClipboardList}
                 color="#FA731C"
               />
             )}

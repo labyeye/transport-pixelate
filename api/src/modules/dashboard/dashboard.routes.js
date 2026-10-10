@@ -8,6 +8,7 @@ import { dateInZone } from "../../utils/time.js";
 import { Maintenance } from "../../models/Maintenance.js";
 import { FuelLog } from "../../models/FuelLog.js";
 import { Expense } from "../../models/Expense.js";
+import { TransportRequest } from "../../models/TransportRequest.js";
 import { can } from "../../utils/permissions.js";
 import { ah } from "../../utils/asyncHandler.js";
 const r = Router();
@@ -77,6 +78,14 @@ r.get(
     }
     expiries.sort((a, b) => +a.expiryDate - +b.expiryDate);
     const org = req.user.organization;
+    const requests = can(req.user.role, "requests:review")
+      ? {
+          pending: await TransportRequest.countDocuments({
+            organization: org,
+            status: { $in: ["submitted", "under_review"] },
+          }),
+        }
+      : null;
     const monthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
     );
@@ -159,6 +168,7 @@ r.get(
             count(tripStatus, "cancelled") + count(tripStatus, "aborted"),
         },
         maintenance,
+        requests,
         costs,
         expiries: expiries.slice(0, 20),
       },
