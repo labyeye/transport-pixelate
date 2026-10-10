@@ -22,6 +22,7 @@ import reportRoutes from "./modules/reports/reports.routes.js";
 import userRoutes from "./modules/users/users.routes.js";
 import settingsRoutes from "./modules/settings/settings.routes.js";
 import billingRoutes from "./modules/billing/billing.routes.js";
+import driverRoutes2 from "./modules/driver/driver.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 export function createApp(allowedOrigins) {
@@ -63,6 +64,7 @@ export function createApp(allowedOrigins) {
   app.use("/api/v1/users", userRoutes);
   app.use("/api/v1/settings", settingsRoutes);
   app.use("/api/v1/billing", billingRoutes);
+  app.use("/api/v1/driver", driverRoutes2);
   app.use("/api/v1/dashboard", dashboardRoutes);
   app.use((_req, res) =>
     res.status(404).json({ success: false, message: "Not found" }),

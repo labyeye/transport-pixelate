@@ -4,6 +4,9 @@ import { Driver } from "../../models/Driver.js";
 import { Route } from "../../models/Route.js";
 import { nextSeq } from "../../models/Counter.js";
 import { conflict, notFound, badRequest } from "../../utils/errors.js";
+import { emitToOrg } from "../../realtime.js";
+import { recordSystemEvent } from "../events/events.service.js";
+import { tripStatusChanged } from "../notifications/triggers.js";
 
 // Allowed status transitions. Terminal states have no exits, so a completed trip can't be restarted.
 export const TRANSITIONS = {
@@ -192,4 +195,74 @@ export async function releaseResources(org, trip) {
       { _id: trip.driver, organization: org, status: "on_duty" },
       { status: "active" },
     );
+}
+
+const NEEDS_REASON = ["cancelled", "aborted", "delayed"];
+
+/**
+ * The single place a trip changes status. Used by dispatchers (web) and drivers (mobile) so both obey the
+ * same rules: legal transitions only, availability checked at start, resources released at the end.
+ */
+export async function applyTransition(
+  org,
+  trip,
+  to,
+  { reason, actualDistanceKm, actor } = {},
+) {
+  const from = trip.status;
+  if (!TRANSITIONS[from].includes(to))
+    throw conflict(
+      `A ${from.replace("_", " ")} trip can't move to ${to.replace("_", " ")}`,
+    );
+  if (NEEDS_REASON.includes(to) && !reason)
+    throw badRequest("A reason is required");
+  if (
+    ["assigned", "ready", "in_progress"].includes(to) &&
+    !(trip.vehicle && trip.driver)
+  )
+    throw conflict("Assign a vehicle and a driver first");
+
+  if (to === "in_progress" && from === "ready") {
+    const v = await Vehicle.findOne({ _id: trip.vehicle, organization: org });
+    const d = await Driver.findOne({ _id: trip.driver, organization: org });
+    if (!v || UNAVAILABLE_VEHICLE.includes(v.status))
+      throw conflict("Vehicle is not available");
+    if (v.status === "on_trip")
+      throw conflict("Vehicle is already on another trip");
+    if (!d || UNAVAILABLE_DRIVER.includes(d.status))
+      throw conflict("Driver is not available");
+    if (d.status === "on_duty")
+      throw conflict("Driver is already on another trip");
+    v.status = "on_trip";
+    d.status = "on_duty";
+    await Promise.all([v.save(), d.save()]);
+    trip.actualStart = new Date();
+  }
+  if (to === "delayed") trip.delayReason = reason;
+  if (to === "cancelled") trip.cancellationReason = reason;
+  if (to === "completed" || to === "aborted") {
+    trip.actualEnd = new Date();
+    if (actualDistanceKm != null) trip.actualDistanceKm = actualDistanceKm;
+    if (to === "aborted") trip.cancellationReason = reason;
+    await releaseResources(org, trip);
+  }
+  trip.status = to;
+  trip.history.push({ by: actor, action: "status", from, to, note: reason });
+  await trip.save();
+  const EV = {
+    in_progress: from === "ready" ? "trip_started" : null,
+    delayed: "delay_reported",
+    completed: "trip_completed",
+    cancelled: "trip_cancelled",
+    aborted: "trip_aborted",
+  };
+  if (EV[to]) await recordSystemEvent(trip, EV[to], { actor, notes: reason });
+  emitToOrg(org, "trip:status", {
+    tripId: trip.id,
+    tripNumber: trip.tripNumber,
+    status: to,
+    vehicleId: trip.vehicle ? String(trip.vehicle) : null,
+  });
+  tripStatusChanged(trip, to, reason, actor);
+  return { trip, from };
 }

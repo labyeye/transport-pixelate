@@ -26,6 +26,8 @@ const id = z.string().regex(/^[a-f\d]{24}$/i, "Invalid id");
 async function loadTrip(req) {
   const trip = await Trip.findOne({ _id: req.params.id, ...orgScope(req) });
   if (!trip) throw notFound("Trip not found");
+  // Reads of the manifest and event log are limited to assigned drivers/attendants too.
+  await assertCanOperate(req, trip);
   return trip;
 }
 

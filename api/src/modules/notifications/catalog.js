@@ -37,6 +37,14 @@ export const EVENTS = {
     title: "Trip {{tripNumber}} delayed",
     body: "Trip {{tripNumber}} ({{route}}) is delayed. Reason: {{reason}}",
   },
+  emergency: {
+    label: "Emergency reported",
+    severity: "critical",
+    channels: ["in_app", "email", "sms"],
+    roles: STAFF,
+    title: "EMERGENCY: {{vehicle}} ({{tripNumber}})",
+    body: "{{driver}} reported an emergency on trip {{tripNumber}}. {{reason}} Call them now.",
+  },
   trip_cancelled: {
     label: "Trip cancelled",
     severity: "warning",

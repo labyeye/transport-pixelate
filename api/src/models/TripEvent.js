@@ -12,6 +12,7 @@ export const EVENT_TYPES = [
   "delay_reported",
   "breakdown_reported",
   "incident_reported",
+  "emergency_reported",
   "note",
   "trip_completed",
   "trip_cancelled",

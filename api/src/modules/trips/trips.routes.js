@@ -1,6 +1,10 @@
 import { emitToOrg } from "../../realtime.js";
 import { tripAssigned, tripStatusChanged } from "../notifications/triggers.js";
-import { recordSystemEvent } from "../events/events.service.js";
+import {
+  assertCanOperate,
+  ownTripFilter,
+  recordSystemEvent,
+} from "../events/events.service.js";
 import { Router } from "express";
 import { z } from "zod";
 import { Trip, TRIP_STATUSES } from "../../models/Trip.js";
@@ -15,8 +19,8 @@ import { meta, pageQuery } from "../../utils/pagination.js";
 import { audit } from "../../models/AuditLog.js";
 import { zonedToUtc } from "../../utils/time.js";
 import {
-  TRANSITIONS,
   EDITABLE,
+  applyTransition,
   assertResources,
   createTrip,
   releaseResources,
@@ -66,7 +70,7 @@ r.get(
   validate(listQuery, "query"),
   ah(async (req, res) => {
     const q = req.query;
-    const filter = { ...orgScope(req) };
+    const filter = { ...orgScope(req), ...(await ownTripFilter(req)) };
     if (q.status) filter.status = q.status;
     if (q.date) filter.scheduledDate = q.date;
     else if (q.from || q.to)
@@ -133,6 +137,11 @@ r.get(
       .populate("attendant", "name phone")
       .populate("history.by", "name");
     if (!t) throw notFound("Trip not found");
+    // Drivers and attendants may only read trips they are assigned to.
+    await assertCanOperate(req, {
+      driver: t.driver?._id,
+      attendant: t.attendant?._id,
+    });
     res.json({ success: true, data: t });
   }),
 );
@@ -201,77 +210,14 @@ r.post(
   validate(transitionBody),
   ah(async (req, res) => {
     const { to, reason, actualDistanceKm } = req.body;
-    const org = req.user.organization;
     const trip = await Trip.findOne({ _id: req.params.id, ...orgScope(req) });
     if (!trip) throw notFound("Trip not found");
     const from = trip.status;
-    if (!TRANSITIONS[from].includes(to))
-      throw conflict(
-        `A ${from.replace("_", " ")} trip can't move to ${to.replace("_", " ")}`,
-      );
-    if (NEEDS_REASON.includes(to) && !reason)
-      throw badRequest("A reason is required");
-    if (
-      ["assigned", "ready", "in_progress"].includes(to) &&
-      !(trip.vehicle && trip.driver)
-    )
-      throw conflict("Assign a vehicle and a driver first");
-
-    if (to === "in_progress" && from === "ready") {
-      const v = await Vehicle.findOne({ _id: trip.vehicle, organization: org });
-      const d = await Driver.findOne({ _id: trip.driver, organization: org });
-      if (
-        !v ||
-        ["maintenance", "out_of_service", "inactive"].includes(v.status)
-      )
-        throw conflict("Vehicle is not available");
-      if (v.status === "on_trip")
-        throw conflict("Vehicle is already on another trip");
-      if (!d || ["suspended", "inactive", "on_leave"].includes(d.status))
-        throw conflict("Driver is not available");
-      if (d.status === "on_duty")
-        throw conflict("Driver is already on another trip");
-      v.status = "on_trip";
-      d.status = "on_duty";
-      await Promise.all([v.save(), d.save()]);
-      trip.actualStart = new Date();
-    }
-    if (to === "delayed") trip.delayReason = reason;
-    if (to === "cancelled") trip.cancellationReason = reason;
-    if (to === "completed" || to === "aborted") {
-      trip.actualEnd = new Date();
-      if (actualDistanceKm != null) trip.actualDistanceKm = actualDistanceKm;
-      if (to === "aborted") trip.cancellationReason = reason;
-      await releaseResources(org, trip);
-    }
-    trip.status = to;
-    trip.history.push({
-      by: req.user._id,
-      action: "status",
-      from,
-      to,
-      note: reason,
+    await applyTransition(req.user.organization, trip, to, {
+      reason,
+      actualDistanceKm,
+      actor: req.user._id,
     });
-    await trip.save();
-    const EV = {
-      in_progress: from === "ready" ? "trip_started" : null,
-      delayed: "delay_reported",
-      completed: "trip_completed",
-      cancelled: "trip_cancelled",
-      aborted: "trip_aborted",
-    };
-    if (EV[to])
-      await recordSystemEvent(trip, EV[to], {
-        actor: req.user._id,
-        notes: reason,
-      });
-    emitToOrg(org, "trip:status", {
-      tripId: trip.id,
-      tripNumber: trip.tripNumber,
-      status: to,
-      vehicleId: trip.vehicle ? String(trip.vehicle) : null,
-    });
-    tripStatusChanged(trip, to, reason, req.user._id);
     await audit(req, "trip.transition", "Trip", trip.id, { from, to });
     res.json({ success: true, data: trip });
   }),

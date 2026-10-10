@@ -78,3 +78,15 @@ export function passengerStates(effective) {
   }
   return state;
 }
+
+/** For driver/attendant roles returns a filter fragment limiting trips to their own; null for everyone else. */
+export async function ownTripFilter(req) {
+  if (!["driver", "attendant"].includes(req.user.role)) return null;
+  const me = await Driver.findOne({
+    organization: req.user.organization,
+    user: req.user._id,
+  }).select("_id");
+  // A login with no linked profile sees nothing rather than everything.
+  if (!me) return { _id: { $in: [] } };
+  return { $or: [{ driver: me._id }, { attendant: me._id }] };
+}

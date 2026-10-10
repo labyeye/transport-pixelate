@@ -111,3 +111,23 @@ export const routeChanged = (route) =>
       link: "/routes",
     });
   });
+
+export const emergencyReported = (trip, notes, driverName) =>
+  safe(async () => {
+    const [{ vars }, vehicle] = await Promise.all([
+      context(trip),
+      trip.vehicle
+        ? Vehicle.findById(trip.vehicle).select("registrationNumber").lean()
+        : null,
+    ]);
+    await notify("emergency", {
+      org: trip.organization,
+      vars: {
+        ...vars,
+        vehicle: vehicle?.registrationNumber ?? "Vehicle",
+        driver: driverName ?? "The driver",
+        reason: notes ?? "",
+      },
+      link: "/trips",
+    });
+  });
