@@ -62,69 +62,81 @@ export default function DashboardPage() {
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
             <StatCard
+              delay={0.0}
               label="Total vehicles"
               value={data.vehicles.total}
               icon={Truck}
             />
             <StatCard
+              delay={0.05}
               label="Available"
               value={data.vehicles.available}
               icon={CheckCircle2}
               color="#00C48C"
             />
             <StatCard
+              delay={0.1}
               label="On trip"
               value={data.vehicles.onTrip}
               icon={Navigation}
               color="#FA731C"
             />
             <StatCard
+              delay={0.15}
               label="Maintenance"
               value={data.vehicles.maintenance}
               icon={Wrench}
               color="#D97706"
             />
             <StatCard
+              delay={0.2}
               label="Total drivers"
               value={data.drivers.total}
               icon={Users}
             />
             <StatCard
+              delay={0.25}
               label="On duty"
               value={data.drivers.onDuty}
               icon={Users}
               color="#FA731C"
             />
             <StatCard
+              delay={0.3}
               label="On leave"
               value={data.drivers.onLeave}
               icon={Users}
               color="#D97706"
             />
             <StatCard
+              delay={0.35}
               label="Trips today"
               value={data.trips.today}
               icon={Navigation}
             />
             <StatCard
+              delay={0.4}
               label="Trips in progress"
               value={data.trips.inProgress}
               icon={Navigation}
               color="#FA731C"
             />
             <StatCard
+              delay={0.45}
               label="Completed today"
               value={data.trips.completed}
               icon={CheckCircle2}
               color="#00C48C"
             />
             <StatCard
+              delay={0.5}
               label="Delayed / cancelled"
               value={data.trips.delayed + data.trips.cancelled}
               icon={AlertTriangle}
               color="#EF4444"
             />
             <StatCard
+              delay={0.55}
               label="Open maintenance"
               value={data.maintenance.open}
               icon={Wrench}
@@ -132,6 +144,7 @@ export default function DashboardPage() {
             />
             {data.costs && (
               <StatCard
+              delay={0.6}
                 label="Fuel this month"
                 value={formatCurrency(data.costs.fuel)}
                 icon={Fuel}
@@ -139,6 +152,7 @@ export default function DashboardPage() {
             )}
             {data.costs && (
               <StatCard
+              delay={0.65}
                 label="Pending expenses"
                 value={data.costs.pendingExpenses}
                 icon={Receipt}
@@ -147,6 +161,7 @@ export default function DashboardPage() {
             )}
             {data.requests && (
               <StatCard
+              delay={0.7}
                 label="Requests to review"
                 value={data.requests.pending}
                 icon={ClipboardList}
@@ -154,6 +169,7 @@ export default function DashboardPage() {
               />
             )}
             <StatCard
+              delay={0.75}
               label="Out of service"
               value={data.vehicles.outOfService}
               icon={AlertTriangle}

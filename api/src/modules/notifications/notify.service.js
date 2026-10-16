@@ -7,6 +7,10 @@ import { emitToUser } from "../../realtime.js";
 import { CHANNELS, EVENTS, EXTERNAL } from "./catalog.js";
 import { channels } from "./channels/index.js";
 import { render } from "./render.js";
+import {
+  ensureSubscription,
+  featuresFor,
+} from "../saas/subscription.service.js";
 
 const MAX_ATTEMPTS = 3;
 const BACKOFF_MIN = [1, 5, 30];
@@ -17,7 +21,10 @@ export async function ruleFor(org, event) {
   if (!def) return null;
   const s = await NotificationSetting.findOne({ organization: org }).lean();
   const o = s?.events?.[event];
-  const chOn = (c) => c === "in_app" || s?.channels?.[c]?.enabled === true;
+  const wa = featuresFor(await ensureSubscription(org)).whatsapp;
+  const chOn = (c) =>
+    c === "in_app" ||
+    (s?.channels?.[c]?.enabled === true && (c !== "whatsapp" || wa));
   return {
     enabled: o?.enabled ?? true,
     channels: (o?.channels ?? def.channels).filter(

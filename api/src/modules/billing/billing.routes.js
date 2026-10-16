@@ -9,6 +9,8 @@ import { PaymentIntent } from "../../models/PaymentIntent.js";
 import { Passenger } from "../../models/Passenger.js";
 import { Route } from "../../models/Route.js";
 import { Organization } from "../../models/Organization.js";
+import { Subscription } from "../../models/Subscription.js";
+import { activateFromPending } from "../saas/subscription.service.js";
 import { protect, requirePermission, orgScope } from "../../middleware/auth.js";
 import { requireModule } from "../../middleware/requireModule.js";
 import { validate } from "../../middleware/validate.js";
@@ -60,6 +62,15 @@ r.post(
     const p = event.payload?.payment?.entity;
     if (!p?.id || !p.order_id)
       return res.json({ success: true, ignored: true });
+    // Platform subscription orders share this webhook; activate from the stored order, never the payload.
+    const planSub = await Subscription.findOne({
+      "pending.orderId": p.order_id,
+    });
+    if (planSub) {
+      if (p.amount === planSub.pending.amount)
+        await activateFromPending(planSub, p.id);
+      return res.json({ success: true });
+    }
     const intent = await PaymentIntent.findOne({ orderId: p.order_id });
     if (!intent) return res.json({ success: true, ignored: true }); // not an order we created
     if (

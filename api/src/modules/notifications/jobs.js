@@ -7,6 +7,7 @@ import { Driver } from "../../models/Driver.js";
 import { Maintenance } from "../../models/Maintenance.js";
 import { notify, retryDue } from "./notify.service.js";
 import { DAY, daysLeft, soonWindow } from "../documents/documents.service.js";
+import { ensureSubscription } from "../saas/subscription.service.js";
 
 const fmtTime = (d, tz) =>
   d.toLocaleTimeString("en-IN", {
@@ -127,12 +128,42 @@ export async function maintenanceDue(org, tz, now = Date.now()) {
   return list.length;
 }
 
+const SUB_STAGES = [7, 3, 1, 0]; // days left at which the owner is told; 0 = ended
+
+export async function subscriptionReminders(org, now = Date.now()) {
+  const sub = await ensureSubscription(org);
+  const end = sub.isTrial ? sub.trialEndDate : sub.renewalDate;
+  if (!end) return 0;
+  const left = Math.ceil((end - now) / DAY);
+  // Smallest stage already reached, so each stage fires once per period (the key carries the end date).
+  const stage = [...SUB_STAGES].sort((a, b) => a - b).find((s) => left <= s);
+  if (stage === undefined || left < -7) return 0; // far from the end, or long expired
+  const plan = sub.isTrial ? "free trial" : "subscription";
+  await notify("subscription_ending", {
+    org,
+    dedupeKey: `sub:${new Date(end).toISOString().slice(0, 10)}:${stage}`,
+    link: "/subscription",
+    vars: {
+      plan,
+      when:
+        left <= 0
+          ? "has ended"
+          : left === 1
+            ? "ends tomorrow"
+            : `ends in ${left} days`,
+      date: new Date(end).toLocaleDateString("en-IN"),
+    },
+  });
+  return 1;
+}
+
 export async function runScheduled(now = Date.now()) {
   const orgs = await Organization.find({ status: "active" })
     .select("timezone")
     .lean();
-  const out = { trips: 0, documents: 0, maintenance: 0 };
+  const out = { trips: 0, documents: 0, maintenance: 0, subscriptions: 0 };
   for (const o of orgs) {
+    out.subscriptions += await subscriptionReminders(o._id, now);
     out.trips += await tripsStartingSoon(o._id, o.timezone, now);
     out.documents += await documentReminders(o._id, now);
     out.maintenance += await maintenanceDue(o._id, o.timezone, now);

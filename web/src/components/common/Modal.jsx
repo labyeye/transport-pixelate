@@ -15,7 +15,7 @@ export function Modal({ title, onClose, children, wide }) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`border-2 border-black bg-white w-full ${wide ? "max-w-2xl" : "max-w-md"} max-h-[90vh] flex flex-col`}
+        className={`rounded-lg overflow-hidden border-2 border-black bg-white w-full ${wide ? "max-w-2xl" : "max-w-md"} max-h-[90vh] flex flex-col`}
         style={{ animation: "page-fade-in 0.2s ease-out both" }}
       >
         <div className="flex items-center justify-between px-5 py-3 border-b-2 border-black bg-[#024BAB]">

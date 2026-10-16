@@ -3,6 +3,7 @@ import { VehiclePosition } from "../../models/VehiclePosition.js";
 import { Trip } from "../../models/Trip.js";
 import { emitToOrg } from "../../realtime.js";
 import { badRequest } from "../../utils/errors.js";
+import { runAlerts } from "../alerts/alerts.service.js";
 
 export const LIVE_MS = 2 * 60 * 1000; // fresher than this => live
 export const OFFLINE_MS = 15 * 60 * 1000; // older than this => offline
@@ -79,6 +80,31 @@ export async function ingest({ org, vehicleId, source, deviceId, pings }) {
     null,
   );
   if (newest) {
+    // Rules run on the newest fix only, and only if it is newer than what is stored (same rule as the
+    // position update below). ponytail: buffered intermediate fixes are not replayed through the rules.
+    const prev = await VehiclePosition.findOne({
+      organization: org,
+      vehicle: vehicleId,
+    })
+      .select("inside overspeed recordedAt")
+      .lean();
+    const alertState =
+      !prev?.recordedAt || newest.recordedAt > prev.recordedAt
+        ? await runAlerts({
+            org,
+            vehicleId,
+            tripId: trip?._id,
+            fix: {
+              lat: newest.lat,
+              lng: newest.lng,
+              speedKmh: newest.speedKmh,
+              recordedAt: newest.recordedAt,
+            },
+            prev: prev?.inside
+              ? { inside: prev.inside, overspeed: prev.overspeed }
+              : null,
+          })
+        : {};
     const res = await VehiclePosition.findOneAndUpdate(
       {
         organization: org,
@@ -96,6 +122,7 @@ export async function ingest({ org, vehicleId, source, deviceId, pings }) {
           accuracyM: newest.accuracyM,
           recordedAt: newest.recordedAt,
           receivedAt: newest.receivedAt,
+          ...alertState,
         },
       },
       { new: true },
@@ -115,6 +142,7 @@ export async function ingest({ org, vehicleId, source, deviceId, pings }) {
           accuracyM: newest.accuracyM,
           recordedAt: newest.recordedAt,
           receivedAt: newest.receivedAt,
+          ...alertState,
         });
       } catch {
         /* position already exists and is newer */

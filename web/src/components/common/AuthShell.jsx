@@ -12,7 +12,7 @@ const FEATURES = [
 ];
 
 /** Split-screen auth layout. Structure and classes mirror Nest Play's LoginPage so the products feel identical. */
-export function AuthShell({ children }) {
+export function AuthShell({ children, wide = false }) {
   return (
     <div className="min-h-screen flex">
       <div className="hidden lg:flex lg:w-1/2 bg-[#024BAB] flex-col justify-between p-10 relative overflow-hidden">
@@ -47,7 +47,7 @@ export function AuthShell({ children }) {
         </div>
       </div>
       <div className="flex-1 bg-white flex items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-md">
+        <div className={`w-full ${wide ? "max-w-2xl" : "max-w-md"}`}>
           <div className="lg:hidden flex justify-center mb-8">
             <BrandMark className="h-12" />
           </div>

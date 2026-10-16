@@ -48,6 +48,7 @@ const USER = {
   email: "o@x.com",
   role: "owner",
   organization: "o1",
+  onboarded: true,
   permissions: PERMS,
 };
 const page = { page: 1, limit: 15, total: 0, pages: 1 };
@@ -141,6 +142,32 @@ function route(url) {
         },
       },
       meta: { page: 1, pages: 1, total: 1 },
+    };
+  if (p === "/alerts/settings") return { data: { speedLimitKmh: 60 } };
+  if (p === "/subscription")
+    return {
+      data: {
+        subscription: {
+          tier: "pro",
+          isTrial: true,
+          ok: true,
+          daysLeft: 12,
+          endsAt: "2030-03-31T00:00:00.000Z",
+          vehicleLimit: 10,
+        },
+        usage: { vehicles: 3 },
+        features: { whatsapp: true, billing: true, parentAccess: true },
+        plans: {
+          basic: { label: "Web + Mobile", ratePerVehicle: 15000 },
+          pro: { label: "Web + Mobile + WhatsApp", ratePerVehicle: 25000 },
+        },
+        gstRate: 18,
+        paymentsConfigured: false,
+      },
+    };
+  if (p === "/subscription/quote")
+    return {
+      data: { rate: 25000, gstRate: 18, subtotal: 250000, gstAmount: 45000, total: 295000, bonusMonths: 0 },
     };
   if (p === "/documents/summary")
     return {
@@ -239,6 +266,8 @@ const ROUTES = [
   ["/reports", /Reports & analytics/],
   ["/settings", /Organization, people and security/],
   ["/billing", /Transport fees & billing/],
+  ["/subscription", /Priced per active vehicle/],
+  ["/alerts", /Alerts & geofences/],
   ["/forgot-password", /Reset your password/],
 ];
 

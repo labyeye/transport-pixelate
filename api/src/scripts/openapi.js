@@ -9,6 +9,9 @@ const PUBLIC = new Map([
   ["POST /api/v1/auth/refresh", "Exchanges a refresh token"],
   ["POST /api/v1/auth/forgot-password", "Always answers the same way"],
   ["POST /api/v1/auth/reset-password", "Single-use emailed token"],
+  ["POST /api/v1/auth/2fa/verify", "Second sign-in step: temp token + authenticator code"],
+  ["POST /api/v1/auth/login/otp/send", "WhatsApp OTP sign-in; always answers the same way"],
+  ["POST /api/v1/auth/login/otp/verify", "Rate limited; code burns after 5 misses"],
   ["GET /api/v1/health", "Liveness/readiness"],
 ]);
 const DEVICE = "POST /api/v1/tracking/ingest";

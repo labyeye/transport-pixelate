@@ -45,6 +45,8 @@ export function AuthProvider({ children }) {
     async (b) => accept((await post("/auth/register", b)).data),
     [],
   );
+  // Replaces the cached profile, e.g. once the onboarding wizard returns the updated user.
+  const updateUser = useCallback((u) => setUser(u), []);
   const logout = useCallback(async () => {
     try {
       await post("/auth/logout");
@@ -57,7 +59,7 @@ export function AuthProvider({ children }) {
   }, []);
   const can = useCallback((p) => !!user?.permissions.includes(p), [user]);
   return (
-    <Ctx.Provider value={{ user, loading, login, register, logout, can }}>
+    <Ctx.Provider value={{ user, loading, login, register, updateUser, logout, can }}>
       {children}
     </Ctx.Provider>
   );

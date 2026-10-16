@@ -17,6 +17,19 @@ const userSchema = new Schema(
       unique: true,
     },
     phone: String,
+    phoneVerified: { type: Boolean, default: false },
+    // false from self-service sign-up until the onboarding wizard (company, fleet size, plan) is finished.
+    // Defaults to true so every existing account is treated as already onboarded.
+    onboarded: { type: Boolean, default: true },
+    // One-time WhatsApp codes (hashed): phoneOtp verifies the number, loginOtp is passwordless sign-in.
+    phoneOtpHash: { type: String, select: false },
+    phoneOtpExpires: { type: Date, select: false },
+    loginOtpHash: { type: String, select: false },
+    loginOtpExpires: { type: Date, select: false },
+    loginOtpFails: { type: Number, default: 0, select: false },
+    // Authenticator-app 2FA. Secret is set at setup, totpEnabled flips once the first code is confirmed.
+    totpSecret: { type: String, select: false },
+    totpEnabled: { type: Boolean, default: false },
     password: { type: String, required: true, select: false },
     role: { type: String, enum: ROLES, required: true },
     mutedChannels: { type: [String], default: [] }, // external channels this person opted out of

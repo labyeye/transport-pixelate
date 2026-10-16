@@ -14,6 +14,9 @@ const PUBLIC = new Set([
   "POST /api/v1/auth/refresh",
   "POST /api/v1/auth/forgot-password",
   "POST /api/v1/auth/reset-password",
+  "POST /api/v1/auth/2fa/verify", // short-lived temp token from /login
+  "POST /api/v1/auth/login/otp/send",
+  "POST /api/v1/auth/login/otp/verify",
   "POST /api/v1/tracking/ingest", // device key
   "POST /api/v1/billing/razorpay/webhook", // HMAC signature
 ]);
@@ -26,6 +29,12 @@ const SELF_SCOPED = new Set([
   "POST /api/v1/auth/change-password",
   "POST /api/v1/auth/logout-all",
   "PUT /api/v1/auth/profile",
+  "POST /api/v1/auth/phone/send-otp",
+  "POST /api/v1/auth/phone/verify-otp",
+  "POST /api/v1/auth/2fa/totp/setup",
+  "POST /api/v1/auth/2fa/totp/verify",
+  "POST /api/v1/auth/2fa/totp/disable",
+  "GET /api/v1/subscription", // any signed-in user may see plan status; changes need settings:write
   "GET /api/v1/documents",
   "POST /api/v1/documents",
   "GET /api/v1/documents/{id}",

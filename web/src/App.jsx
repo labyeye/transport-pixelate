@@ -3,6 +3,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/hooks/use-toast";
 import AuthPage from "@/pages/AuthPage";
+import RegisterPage from "@/pages/RegisterPage";
+import OnboardingPage from "@/pages/OnboardingPage";
+import WelcomePage from "@/pages/WelcomePage";
 import DashboardPage from "@/pages/DashboardPage";
 import VehiclesPage from "@/pages/VehiclesPage";
 import PassengersPage from "@/pages/PassengersPage";
@@ -19,6 +22,8 @@ import BillingPage from "@/pages/BillingPage";
 import TripsPage from "@/pages/TripsPage";
 import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
+import SubscriptionPage from "@/pages/SubscriptionPage";
+import AlertsPage from "@/pages/AlertsPage";
 const qc = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 });
@@ -30,6 +35,15 @@ function Protected({ children }) {
         <div className="w-6 h-6 border-2 border-[#024BAB] border-t-transparent rounded-full animate-spin" />
       </div>
     );
+  if (!user) return <Navigate to="/login" replace />;
+  // Self-service sign-ups finish the company / fleet / plan wizard before using the app.
+  if (!user.onboarded) return <Navigate to="/onboarding" replace />;
+  return <>{children}</>;
+}
+
+function AuthedOnly({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
   return user ? <>{children}</> : <Navigate to="/login" replace />;
 }
 export default function App() {
@@ -40,6 +54,23 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<AuthPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route
+                path="/onboarding"
+                element={
+                  <AuthedOnly>
+                    <OnboardingPage />
+                  </AuthedOnly>
+                }
+              />
+              <Route
+                path="/welcome"
+                element={
+                  <AuthedOnly>
+                    <WelcomePage />
+                  </AuthedOnly>
+                }
+              />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route
@@ -151,6 +182,22 @@ export default function App() {
                 element={
                   <Protected>
                     <SettingsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/alerts"
+                element={
+                  <Protected>
+                    <AlertsPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/subscription"
+                element={
+                  <Protected>
+                    <SubscriptionPage />
                   </Protected>
                 }
               />

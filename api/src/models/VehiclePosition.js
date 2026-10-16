@@ -13,6 +13,9 @@ const posSchema = new Schema({
   accuracyM: Number,
   recordedAt: Date,
   receivedAt: Date,
+  // Alert-rule state as of the latest fix, so alerts fire on transitions only.
+  inside: [String], // geofence ids the vehicle is currently inside
+  overspeed: Boolean,
 });
 posSchema.index({ organization: 1, vehicle: 1 }, { unique: true });
 

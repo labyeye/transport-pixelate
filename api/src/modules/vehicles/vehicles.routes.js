@@ -9,6 +9,7 @@ import { ah } from "../../utils/asyncHandler.js";
 import { badRequest, conflict, notFound } from "../../utils/errors.js";
 import { escapeRegex, meta, pageQuery } from "../../utils/pagination.js";
 import { audit } from "../../models/AuditLog.js";
+import { assertVehicleQuota } from "../saas/subscription.service.js";
 const r = Router();
 r.use(protect);
 // Indian registration format, e.g. MH12AB1234 / DL1CAB1234 (spaces/hyphens stripped first).
@@ -112,6 +113,7 @@ r.post(
     });
     if (exists)
       throw conflict("A vehicle with this registration number already exists");
+    await assertVehicleQuota(req.user.organization);
     const v = await Vehicle.create({ ...req.body, ...orgScope(req) });
     await audit(req, "vehicle.create", "Vehicle", v.id);
     res.status(201).json({ success: true, data: v });

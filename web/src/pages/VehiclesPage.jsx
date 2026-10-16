@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Archive,
   CheckCircle2,
-  Pencil,
+  ChevronLeft,
+  ChevronRight,
   Plus,
   Truck,
   UserCheck,
@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader, PrimaryButton } from "@/components/common/PageHeader";
-import { FilterSelect, SearchInput } from "@/components/common/SearchInput";
-import { DataTable, EmptyState } from "@/components/common/DataTable";
-import { StatusBadge, VEHICLE_STATUS } from "@/components/common/StatusBadge";
+import { SearchInput } from "@/components/common/SearchInput";
+import { EmptyState } from "@/components/common/DataTable";
+import { VEHICLE_STATUS } from "@/components/common/StatusBadge";
+import { VehicleCard } from "@/components/common/VehicleCard";
+import { FadeIn } from "@/components/motion/FadeIn";
 import { ConfirmationDialog, Modal } from "@/components/common/Modal";
 import { Field, inputCls } from "@/components/common/Field";
 import { StatCard } from "@/components/ui/StatCard";
@@ -21,7 +23,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { del, get, patch, post, put } from "@/services/api";
 import { errMsg } from "@/lib/errors";
-import { formatDateOrDash } from "@/lib/utils";
 const DOCS = ["insurance", "registration", "fitness", "permit", "pollution"];
 const toDate = (d) => (d ? d.slice(0, 10) : "");
 function VehicleForm({ vehicle, onClose }) {
@@ -307,7 +308,7 @@ export default function VehiclesPage() {
   const [archive, setArchive] = useState(null);
   const { data, isLoading, error } = useQuery({
     queryKey: ["vehicles", page, search, status],
-    queryFn: () => get("/vehicles", { page, limit: 15, search, status }),
+    queryFn: () => get("/vehicles", { page, limit: 12, search, status }),
   });
   const dash = useQuery({
     queryKey: ["dashboard"],
@@ -378,47 +379,54 @@ export default function VehiclesPage() {
           color="#D97706"
         />
       </div>
-      <div className="flex flex-wrap gap-2 mb-4">
-        <SearchInput
-          value={search}
-          onChange={(s) => {
-            setSearch(s);
-            setPage(1);
-          }}
-          placeholder="Search by registration number"
-        />
-        <FilterSelect
-          value={status}
-          onChange={(s) => {
-            setStatus(s);
-            setPage(1);
-          }}
-          all="All Status"
-          options={Object.entries(VEHICLE_STATUS).map(([value, m]) => ({
-            value,
-            label: m.label,
-          }))}
-        />
-      </div>
-      {error && (
-        <div
-          role="alert"
-          className="border-2 border-[#EF4444] bg-red-50 p-3 text-sm font-semibold text-red-700 mb-3"
-        >
-          {errMsg(error)}
+      <div className="bg-white rounded-lg border-2 border-black p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-3 mb-5">
+          <h2 className="font-display font-bold text-lg text-black mr-auto">Vehicles List</h2>
+          <SearchInput
+            value={search}
+            onChange={(s) => {
+              setSearch(s);
+              setPage(1);
+            }}
+            placeholder="Search by registration number"
+          />
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
+            {[["", "All"], ...Object.entries(VEHICLE_STATUS).map(([k, m]) => [k, m.label])].map(([k, label]) => (
+              <button
+                key={k || "all"}
+                type="button"
+                aria-pressed={status === k}
+                onClick={() => {
+                  setStatus(k);
+                  setPage(1);
+                }}
+                className={`rounded-lg border-2 border-black px-3 py-1.5 text-xs font-bold transition-colors ${
+                  status === k ? "bg-[#FA731C] text-white" : "bg-white text-black hover:bg-[#F0F6FF]"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-      <DataTable
-        loading={isLoading}
-        rows={data?.data ?? []}
-        meta={data?.meta}
-        onPage={setPage}
-        empty={
+        {error && (
+          <div
+            role="alert"
+            className="rounded-lg border-2 border-[#EF4444] bg-red-50 p-3 text-sm font-semibold text-red-700 mb-3"
+          >
+            {errMsg(error)}
+          </div>
+        )}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }, (_, i) => (
+              <div key={i} className="h-72 rounded-lg border-2 border-black/10 bg-[#024BAB]/[0.03] animate-pulse" />
+            ))}
+          </div>
+        ) : !data?.data?.length ? (
           <EmptyState
             icon={Truck}
-            title={
-              filtered ? "No vehicles match your filters" : "No vehicles yet"
-            }
+            title={filtered ? "No vehicles match your filters" : "No vehicles yet"}
             message={
               filtered
                 ? "Try a different search or status."
@@ -426,105 +434,55 @@ export default function VehiclesPage() {
             }
             action={
               !filtered && canWrite ? (
-                <PrimaryButton onClick={() => setForm("new")}>
-                  Add vehicle
-                </PrimaryButton>
+                <PrimaryButton onClick={() => setForm("new")}>Add vehicle</PrimaryButton>
               ) : undefined
             }
           />
-        }
-        columns={[
-          {
-            header: "Registration",
-            cell: (r) => (
-              <span className="font-bold">{r.registrationNumber}</span>
-            ),
-          },
-          {
-            header: "Vehicle",
-            cell: (r) =>
-              `${[r.make, r.model].filter(Boolean).join(" ") || r.category} · ${r.capacity} seats`,
-          },
-          { header: "Driver", cell: (r) => r.assignedDriver?.name ?? "—" },
-          {
-            header: "Odometer",
-            cell: (r) => `${r.odometer.toLocaleString("en-IN")} km`,
-          },
-          {
-            header: "Nearest expiry",
-            cell: (r) => {
-              const d = Object.values(r.documents ?? {})
-                .map((x) => x?.expiryDate)
-                .filter(Boolean)
-                .sort()[0];
-              return d && new Date(d) < new Date() ? (
-                <span className="nb-badge nb-tag-red">
-                  Expired {formatDateOrDash(d)}
-                </span>
-              ) : (
-                formatDateOrDash(d)
-              );
-            },
-          },
-          {
-            header: "Status",
-            cell: (r) => <StatusBadge meta={VEHICLE_STATUS[r.status]} />,
-          },
-          ...(canWrite
-            ? [
-                {
-                  header: "Actions",
-                  cell: (r) => (
-                    <div className="flex items-center gap-1">
-                      <button
-                        title="Edit"
-                        aria-label="Edit"
-                        onClick={() => setForm(r)}
-                        className="border-2 border-black p-1.5 hover:bg-[#024BAB]/10"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        title="Assign driver"
-                        aria-label="Assign driver"
-                        onClick={() => setAssign(r)}
-                        className="border-2 border-black p-1.5 hover:bg-[#024BAB]/10"
-                      >
-                        <UserCheck className="w-3.5 h-3.5" />
-                      </button>
-                      <select
-                        aria-label="Change status"
-                        value=""
-                        onChange={(e) =>
-                          e.target.value &&
-                          setVehicleStatus.mutate({
-                            id: r._id,
-                            s: e.target.value,
-                          })
-                        }
-                        className="border-2 border-black bg-white text-xs font-bold px-1 py-1.5"
-                      >
-                        <option value="">Set status…</option>
-                        <option value="available">Available</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="out_of_service">Out of service</option>
-                        <option value="inactive">Inactive</option>
-                      </select>
-                      <button
-                        title="Archive"
-                        aria-label="Archive"
-                        onClick={() => setArchive(r)}
-                        className="border-2 border-black p-1.5 hover:bg-red-50"
-                      >
-                        <Archive className="w-3.5 h-3.5 text-red-600" />
-                      </button>
-                    </div>
-                  ),
-                },
-              ]
-            : []),
-        ]}
-      />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+              {data.data.map((r, i) => (
+                <FadeIn key={r._id} delay={Math.min(i, 11) * 0.04} distance={8}>
+                  <VehicleCard
+                    vehicle={r}
+                    canWrite={canWrite}
+                    onEdit={() => setForm(r)}
+                    onAssign={() => setAssign(r)}
+                    onArchive={() => setArchive(r)}
+                    onStatus={(s) => setVehicleStatus.mutate({ id: r._id, s })}
+                  />
+                </FadeIn>
+              ))}
+            </div>
+            {data.meta?.pages > 1 && (
+              <div className="flex items-center justify-between mt-5 text-sm font-semibold">
+                <span className="text-gray-500">{data.meta.total} vehicles</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={data.meta.page <= 1}
+                    onClick={() => setPage(data.meta.page - 1)}
+                    className="rounded-lg border-2 border-black bg-white p-1.5 disabled:opacity-40"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <span>
+                    Page {data.meta.page} of {data.meta.pages}
+                  </span>
+                  <button
+                    disabled={data.meta.page >= data.meta.pages}
+                    onClick={() => setPage(data.meta.page + 1)}
+                    className="rounded-lg border-2 border-black bg-white p-1.5 disabled:opacity-40"
+                    aria-label="Next page"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
       {form && (
         <VehicleForm
           vehicle={form === "new" ? undefined : form}

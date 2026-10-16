@@ -4,6 +4,7 @@ import { Organization } from "../models/Organization.js";
 import { forbidden, unauthorized } from "../utils/errors.js";
 import { can } from "../utils/permissions.js";
 import { ah } from "../utils/asyncHandler.js";
+import { assertActive } from "../modules/saas/subscription.service.js";
 export const protect = ah(async (req, _res, next) => {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer "))
@@ -21,6 +22,9 @@ export const protect = ah(async (req, _res, next) => {
   const org = await Organization.findById(user.organization).select("status");
   if (!org || org.status !== "active")
     throw forbidden("Organization is suspended");
+  // An expired trial / unpaid plan locks the product, but never the screens needed to pay or sign out.
+  if (!/^\/api\/v1\/(subscription|auth)(\/|\?|$)/.test(req.originalUrl))
+    await assertActive(user.organization);
   req.user = user;
   next();
 });

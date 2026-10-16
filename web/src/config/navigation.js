@@ -1,5 +1,6 @@
 import {
   Bell,
+  BellRing,
   CreditCard,
   Settings,
   BarChart3,
@@ -75,6 +76,12 @@ export const NAV_GROUPS = [
         permission: "tracking:read",
       },
       {
+        title: "Alerts",
+        href: "/alerts",
+        icon: BellRing,
+        permission: "tracking:read",
+      },
+      {
         title: "Passengers",
         href: "/passengers",
         icon: UserRound,
@@ -134,6 +141,12 @@ export const NAV_GROUPS = [
         title: "Notifications",
         href: "/notifications",
         icon: Bell,
+        permission: "",
+      },
+      {
+        title: "Subscription",
+        href: "/subscription",
+        icon: CreditCard,
         permission: "",
       },
       { title: "Settings", href: "/settings", icon: Settings, permission: "" },

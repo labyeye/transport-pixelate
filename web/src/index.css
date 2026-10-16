@@ -100,6 +100,16 @@
 }
 
 @layer base {
+  /* Hand-rolled controls (border-2 inputs / buttons) get the same rounded-lg + hard shadow as the shadcn ones. */
+  :where(input, select, textarea, button, a, label).border-2 {
+    border-radius: 0.5rem;
+  }
+  :where(input, select, textarea).border-2:not([type="checkbox"], [type="radio"]) {
+    box-shadow: 2px 2px 0px #0a0a0a;
+  }
+}
+
+@layer base {
   input:focus,
   select:focus,
   textarea:focus {
@@ -140,7 +150,7 @@
   }
 
   .nb-btn {
-    @apply border-2 border-black font-bold transition-all duration-100;
+    @apply border-2 border-black rounded-lg font-bold transition-all duration-100;
     box-shadow: 3px 3px 0px #0a0a0a;
   }
   .nb-btn:hover {
@@ -153,7 +163,7 @@
   }
 
   .nb-input {
-    @apply border-2 border-black bg-white font-medium rounded-none;
+    @apply border-2 border-black bg-white font-medium rounded-lg;
     box-shadow: 2px 2px 0px #0a0a0a;
   }
   .nb-input:focus {
@@ -162,7 +172,7 @@
   }
 
   .nb-badge {
-    @apply border-2 border-black font-bold text-xs px-2 py-0.5 whitespace-nowrap inline-block;
+    @apply border-2 border-black rounded-full font-bold text-xs px-2 py-0.5 whitespace-nowrap inline-block;
     box-shadow: 2px 2px 0px #0a0a0a;
   }
 

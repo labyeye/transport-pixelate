@@ -21,7 +21,7 @@ export function ActionModal({
       style={{ animation: "fadeIn 0.15s ease-out" }}
     >
       <div
-        className="border-2 border-black bg-white w-full max-w-sm p-8 flex flex-col items-center justify-center text-center relative"
+        className="rounded-lg border-2 border-black bg-white w-full max-w-sm p-8 flex flex-col items-center justify-center text-center relative"
         style={{ animation: "slideUp 0.2s ease-out" }}
       >
         {type === "error" && (

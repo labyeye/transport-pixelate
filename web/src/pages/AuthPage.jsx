@@ -1,202 +1,117 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { errMsg } from "@/lib/errors";
 import {
   AuthShell,
   authButton,
   authInput,
-  authLabel,
 } from "@/components/common/AuthShell";
+import { EMAIL_RE, Field, PasswordInput } from "@/components/common/AuthFields";
 
+// Sign-in only. Creating an account lives on /register, then the onboarding wizard (same flow as NestHR).
 export default function AuthPage() {
-  const { user, login, register } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login");
-  const [f, setF] = useState({
-    organizationName: "",
-    category: "school",
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [f, setF] = useState({ email: "", password: "" });
+  const [touched, setTouched] = useState({});
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   if (user) return <Navigate to="/" replace />;
 
+  const errors = {};
+  if (!EMAIL_RE.test(f.email.trim())) errors.email = "Enter a valid email address";
+  if (!f.password) errors.password = "Password is required";
+  const err = (k) => (touched[k] ? errors[k] : undefined);
+  const touch = (k) => () => setTouched((t) => ({ ...t, [k]: true }));
   const set = (k) => (e) => {
     setF({ ...f, [k]: e.target.value });
     setError("");
   };
   const submit = async (e) => {
     e.preventDefault();
-    setError("");
+    if (Object.keys(errors).length) {
+      setTouched({ email: true, password: true });
+      return;
+    }
     setBusy(true);
     try {
-      if (mode === "login") await login(f.email, f.password);
-      else await register(f);
+      await login(f.email.trim(), f.password);
       navigate("/");
-    } catch (err) {
-      setError(errMsg(err));
+    } catch (e2) {
+      setError(errMsg(e2));
     } finally {
       setBusy(false);
     }
   };
-  const register_ = mode === "register";
 
   return (
     <AuthShell>
       <div className="mb-8">
-        <h2 className="text-2xl sm:text-3xl font-display font-bold text-black">
-          {register_ ? "Create your organization" : "Welcome back"}
-        </h2>
-        <p className="text-sm text-gray-500 mt-1 font-medium">
-          {register_
-            ? "Set up Nest Transport for your fleet"
-            : "Sign in to your workspace"}
-        </p>
+        <h2 className="text-2xl sm:text-3xl font-display font-bold text-black">Welcome back</h2>
+        <p className="text-sm text-gray-500 mt-1 font-medium">Sign in to your workspace</p>
       </div>
       {error && (
         <div
           role="alert"
-          className="flex items-center gap-2 bg-red-50 border-2 border-red-400 text-red-600 text-sm px-3 py-2.5 mb-5"
+          className="flex items-center gap-2 rounded-lg bg-red-50 border-2 border-red-400 text-red-600 text-sm px-3 py-2.5 mb-5"
         >
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span className="font-medium">{error}</span>
         </div>
       )}
-      <form onSubmit={submit} className="space-y-5">
-        {register_ && (
-          <>
-            <div>
-              <label className={authLabel} htmlFor="org">
-                Organization name
-              </label>
-              <input
-                id="org"
-                required
-                className={authInput}
-                value={f.organizationName}
-                onChange={set("organizationName")}
-                placeholder="e.g. Greenfield Public School"
-              />
-            </div>
-            <div>
-              <label className={authLabel} htmlFor="cat">
-                Type
-              </label>
-              <select
-                id="cat"
-                className={authInput}
-                value={f.category}
-                onChange={set("category")}
-              >
-                <option value="school">School</option>
-                <option value="employee">Employee transport</option>
-                <option value="institution">Institution</option>
-                <option value="contractor">Transport contractor</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className={authLabel} htmlFor="name">
-                Your name
-              </label>
-              <input
-                id="name"
-                required
-                className={authInput}
-                value={f.name}
-                onChange={set("name")}
-              />
-            </div>
-          </>
-        )}
-        <div>
-          <label className={authLabel} htmlFor="email">
-            Email
-          </label>
+      <form onSubmit={submit} noValidate className="space-y-5">
+        <Field label="Email" htmlFor="email" error={err("email")}>
           <input
             id="email"
             type="email"
-            required
             autoComplete="email"
             autoFocus
-            className={authInput}
+            className={`${authInput} ${err("email") ? "!border-red-500" : ""}`}
             value={f.email}
             onChange={set("email")}
+            onBlur={touch("email")}
             placeholder="Enter your Email address"
           />
+        </Field>
+        <Field label="Password" htmlFor="password" error={err("password")}>
+          <PasswordInput
+            id="password"
+            value={f.password}
+            onChange={set("password")}
+            onBlur={touch("password")}
+            placeholder="Enter your Password"
+            autoComplete="current-password"
+            invalid={!!err("password")}
+            show={showPw}
+            onToggle={() => setShowPw(!showPw)}
+          />
+        </Field>
+        <div className="flex justify-end -mt-2">
+          <Link to="/forgot-password" className="text-xs font-bold text-[#024BAB] hover:underline">
+            Forgot password?
+          </Link>
         </div>
-        <div>
-          <label className={authLabel} htmlFor="password">
-            Password
-          </label>
-          <div className="flex border-2 border-black focus-within:border-[#024BAB] transition-colors">
-            <input
-              id="password"
-              type={showPw ? "text" : "password"}
-              required
-              minLength={register_ ? 8 : 1}
-              autoComplete={register_ ? "new-password" : "current-password"}
-              className="flex-1 px-4 py-3 bg-white text-sm font-medium outline-none"
-              value={f.password}
-              onChange={set("password")}
-              placeholder="Enter your Password"
-            />
-            <button
-              type="button"
-              aria-label={showPw ? "Hide password" : "Show password"}
-              onClick={() => setShowPw(!showPw)}
-              className="px-3 border-l-2 border-black hover:bg-gray-50 transition-colors"
-            >
-              {showPw ? (
-                <EyeOff className="w-4 h-4 text-black" />
-              ) : (
-                <Eye className="w-4 h-4 text-black" />
-              )}
-            </button>
-          </div>
-        </div>
-        {mode === "login" && (
-          <div className="flex justify-end">
-            <Link
-              to="/forgot-password"
-              className="text-xs font-bold text-[#024BAB] hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-        )}
         <button type="submit" disabled={busy} className={authButton}>
           {busy ? (
             <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
-              {register_ ? "Creating…" : "Signing in…"}
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Signing in…
             </>
           ) : (
             <>
-              {register_ ? "Create account" : "Sign In"}{" "}
-              <ArrowRight className="w-4 h-4" />
+              Sign In <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
       </form>
       <div className="mt-6 pt-6 border-t-2 border-black/10 text-center">
         <p className="text-xs text-gray-500">
-          {register_ ? "Already have an account? " : "New to Nest Transport? "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(register_ ? "login" : "register");
-              setError("");
-            }}
-            className="font-bold text-[#024BAB] hover:underline"
-          >
-            {register_ ? "Sign in" : "Create an account"}
-          </button>
+          New to Nest Transport?{" "}
+          <Link to="/register" className="font-bold text-[#024BAB] hover:underline">
+            Create an account
+          </Link>
         </p>
       </div>
     </AuthShell>

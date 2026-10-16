@@ -1,8 +1,9 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FadeIn } from "@/components/motion/FadeIn";
 export function DataTable({ columns, rows, loading, meta, onPage, empty }) {
   if (loading) {
     return (
-      <div className="border-2 border-black bg-white">
+      <div className="rounded-lg overflow-hidden border-2 border-black bg-white">
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
@@ -14,11 +15,11 @@ export function DataTable({ columns, rows, loading, meta, onPage, empty }) {
   }
   if (!rows.length) return <>{empty}</>;
   return (
-    <div>
-      <div className="border-2 border-black bg-white overflow-auto">
+    <FadeIn distance={8}>
+      <div className="rounded-lg border-2 border-black bg-white overflow-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b-2 border-black bg-[#024BAB]/5">
+            <tr className="border-b-2 border-black bg-[#F0F6FF]">
               {columns.map((c) => (
                 <th
                   key={c.header}
@@ -30,10 +31,10 @@ export function DataTable({ columns, rows, loading, meta, onPage, empty }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {rows.map((r, i) => (
               <tr
                 key={r._id}
-                className="border-b border-black/10 last:border-0 hover:bg-[#024BAB]/[0.03]"
+                className={`border-b border-black/10 last:border-0 hover:bg-[#F0F6FF] transition-colors ${i % 2 ? "bg-gray-50/50" : ""}`}
               >
                 {columns.map((c) => (
                   <td
@@ -55,7 +56,7 @@ export function DataTable({ columns, rows, loading, meta, onPage, empty }) {
             <button
               disabled={meta.page <= 1}
               onClick={() => onPage(meta.page - 1)}
-              className="border-2 border-black bg-white p-1.5 disabled:opacity-40"
+              className="rounded-lg border-2 border-black bg-white p-1.5 disabled:opacity-40"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -65,20 +66,20 @@ export function DataTable({ columns, rows, loading, meta, onPage, empty }) {
             <button
               disabled={meta.page >= meta.pages}
               onClick={() => onPage(meta.page + 1)}
-              className="border-2 border-black bg-white p-1.5 disabled:opacity-40"
+              className="rounded-lg border-2 border-black bg-white p-1.5 disabled:opacity-40"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
-    </div>
+    </FadeIn>
   );
 }
 export function EmptyState({ icon: Icon, title, message, action }) {
   return (
-    <div className="border-2 border-dashed border-black/40 bg-white p-10 flex flex-col items-center text-center gap-2">
-      <div className="w-12 h-12 border-2 border-black bg-[#024BAB]/10 flex items-center justify-center">
+    <div className="rounded-lg border-2 border-dashed border-black/40 bg-white p-10 flex flex-col items-center text-center gap-2">
+      <div className="w-12 h-12 rounded-lg border-2 border-black bg-[#024BAB]/10 flex items-center justify-center">
         <Icon className="w-6 h-6 text-[#024BAB]" />
       </div>
       <p className="font-bold text-black">{title}</p>

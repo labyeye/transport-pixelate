@@ -307,13 +307,28 @@ export async function recordPayment(
     throw e;
   }
   const updated = await recompute(inv._id);
-  // Two concurrent manual payments could both have passed the balance check; undo the loser.
+  // Concurrent manual payments could all have passed the balance check. Every racer applies the same rule:
+  // receipts are ranked by number, and a payment loses if the ones up to and including it exceed the invoice.
+  // (Undoing on "balance < 0" alone made every racer undo itself.)
   if (source === "manual" && updated.balance < 0) {
-    await Payment.deleteOne({ _id: pay._id });
-    await recompute(inv._id);
-    throw conflict(
-      "The invoice was paid by someone else at the same moment; nothing was recorded",
-    );
+    const [upTo] = await Payment.aggregate([
+      { $match: { invoice: inv._id, number: { $lte: pay.number } } },
+      {
+        $group: {
+          _id: null,
+          net: {
+            $sum: { $subtract: ["$amount", { $ifNull: ["$refundedAmount", 0] }] },
+          },
+        },
+      },
+    ]);
+    if ((upTo?.net ?? 0) > updated.total) {
+      await Payment.deleteOne({ _id: pay._id });
+      await recompute(inv._id);
+      throw conflict(
+        "The invoice was paid by someone else at the same moment; nothing was recorded",
+      );
+    }
   }
   return { payment: pay, invoice: updated, duplicate: false };
 }
