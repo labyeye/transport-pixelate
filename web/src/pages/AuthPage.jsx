@@ -73,7 +73,7 @@ export default function AuthPage() {
             value={f.email}
             onChange={set("email")}
             onBlur={touch("email")}
-            placeholder="Enter your Email address"
+            placeholder="Enter Email address"
           />
         </Field>
         <Field label="Password" htmlFor="password" error={err("password")}>

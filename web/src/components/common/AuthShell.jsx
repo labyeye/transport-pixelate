@@ -22,11 +22,11 @@ export function AuthShell({ children, wide = false }) {
           <BrandMark className="bg-white" />
         </div>
         <div className="relative z-10">
-          <h1 className="text-4xl xl:text-5xl font-display font-bold text-white leading-tight mb-5">
+          <h1 className="text-3xl xl:text-4xl font-display font-bold text-white leading-tight mb-5">
             Every vehicle.
-            <br />
+            
             Every trip.
-            <br />
+            
             One place.
           </h1>
           <p className="text-white/70 text-base font-medium max-w-sm">
@@ -64,6 +64,6 @@ export function AuthShell({ children, wide = false }) {
 export const authLabel =
   "block text-xs font-bold text-black uppercase tracking-wider mb-1.5";
 export const authInput =
-  "w-full px-4 py-3 border-2 border-black text-sm font-medium bg-white focus:outline-none focus:border-[#024BAB] transition-colors";
+  "w-full px-4 py-3 border-2 border-black text-sm font-medium bg-white focus:outline-none transition-colors";
 export const authButton =
   "w-full bg-[#024BAB] text-white py-3.5 text-sm font-bold border-2 border-black hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#0a0a0a] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-60";

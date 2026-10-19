@@ -3,8 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { errMsg } from "@/lib/errors";
-import { BrandMark } from "@/components/common/BrandMark";
-import { authInput } from "@/components/common/AuthShell";
+import { AuthShell, authInput, authButton } from "@/components/common/AuthShell";
 import { EMAIL_RE, Field, PasswordInput } from "@/components/common/AuthFields";
 
 // Same sign-up as NestHR: just name, email and password. Company details, fleet size and plan
@@ -54,11 +53,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F6FF] flex items-center justify-center p-8">
-      <div className="w-full max-w-sm">
-        <div className="mb-8">
-          <BrandMark />
-        </div>
+    <AuthShell>
         <h2 className="font-display font-bold text-3xl text-black mb-1">Create account</h2>
         <p className="text-gray-500 text-sm mb-8">
           Set up your transport workspace ·{" "}
@@ -75,7 +70,7 @@ export default function RegisterPage() {
             <span className="font-medium">{error}</span>
           </div>
         )}
-        <form onSubmit={submit} noValidate className="space-y-4">
+        <form onSubmit={submit} noValidate className="space-y-5 login-anim">
           <Field label="Full Name" htmlFor="name" error={err("name")}>
             <input
               id="name"
@@ -117,7 +112,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={busy}
-            className="border-2 border-black w-full bg-[#024BAB] text-white py-3 text-sm font-bold mt-2 disabled:opacity-60"
+            className={authButton}
           >
             {busy ? (
               <span className="flex items-center justify-center gap-2">
@@ -129,7 +124,6 @@ export default function RegisterPage() {
             )}
           </button>
         </form>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

@@ -31,7 +31,7 @@ export function PasswordInput({
 }) {
   return (
     <div
-      className={`flex rounded-lg overflow-hidden border-2 bg-white transition-colors ${invalid ? "border-red-500" : "border-black focus-within:border-[#024BAB]"}`}
+      className={`flex rounded-lg overflow-hidden border-2 bg-white transition-colors ${invalid ? "border-red-500" : "border-black"}`}
     >
       <input
         id={id}

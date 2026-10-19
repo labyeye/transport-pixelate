@@ -18,7 +18,7 @@ function Shell({ title, children }) {
           {title}
         </h2>
       </div>
-      <div className="space-y-5">
+      <div className="space-y-5 login-anim">
         {children}
         <Link
           to="/login"
@@ -74,7 +74,7 @@ export function ForgotPasswordPage() {
           link.
         </Done>
       ) : (
-        <form onSubmit={submit} className="space-y-5">
+        <form onSubmit={submit} className="space-y-5 login-anim">
           {error && <Alert>{error}</Alert>}
           <div>
             <label className={authLabel} htmlFor="fp-email">
@@ -89,7 +89,7 @@ export function ForgotPasswordPage() {
               className={authInput}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your Email address"
+              placeholder="Enter Email address"
             />
           </div>
           <button disabled={busy} className={authButton}>
@@ -139,7 +139,7 @@ export function ResetPasswordPage() {
       {done ? (
         <Done>Password saved. Taking you to sign in…</Done>
       ) : (
-        <form onSubmit={submit} className="space-y-5">
+        <form onSubmit={submit} className="space-y-5 login-anim">
           {error && <Alert>{error}</Alert>}
           <div>
             <label className={authLabel} htmlFor="np1">

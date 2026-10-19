@@ -38,7 +38,7 @@ export function PhoneField({ id, value, onChange, error, onBlur }) {
   return (
     <div ref={box} className="relative">
       <div
-        className={`flex rounded-lg border-2 bg-white transition-colors ${error ? "border-red-500" : "border-black focus-within:border-[#024BAB]"}`}
+        className={`flex rounded-lg border-2 bg-white transition-colors ${error ? "border-red-500" : "border-black"}`}
       >
         <button
           type="button"
