@@ -9,7 +9,7 @@ design system), React Native mobile app. Source of truth for design: Nest Play (
 | API tests (Vitest, in-memory MongoDB) | **147 passing** — auth, tenant isolation, every module's rules and race conditions, API-surface security guard |
 | Web tests (render every page against a mocked API) | **17 passing** |
 | Mobile tests (offline queue, API client, trip rules, GPS buffer, screens) | **25 passing**; Metro production bundle builds |
-| Lint (`no-undef`, hooks rules) | 0 errors in api, web, NestTransport (mobile) |
+| Lint (`no-undef`, hooks rules) | 0 errors in backend, frontend, NestTransport (mobile) |
 | Real-browser pass (Chrome, seeded data, all 15+ pages, 390 px) | Done; defects found were fixed (see `docs/UI_CONSISTENCY.md`) |
 | **Not verified** | Docker images (daemon unavailable), mobile on a physical device or Android (iOS simulator only, Debug build, Keychain fallback path), any real GPS hardware, SMTP/Twilio/WhatsApp/Razorpay against live services |
 

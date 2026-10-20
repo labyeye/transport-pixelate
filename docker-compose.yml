@@ -1,5 +1,5 @@
 # Single-host deployment: MongoDB + API + web (nginx). Put TLS in front (Caddy/Traefik/cloud load balancer).
-#   cp api/.env.example .env   # then edit secrets
+#   cp backend/.env.example .env   # then edit secrets
 #   docker compose up -d --build
 services:
   mongo:
@@ -12,7 +12,7 @@ services:
       timeout: 5s
       retries: 10
   api:
-    build: ./api
+    build: ./backend
     restart: unless-stopped
     depends_on:
       mongo: { condition: service_healthy }
@@ -23,7 +23,7 @@ services:
       PORT: "5100"
     volumes: [uploads:/data/uploads]
   web:
-    build: ./web
+    build: ./frontend
     restart: unless-stopped
     depends_on: [api]
     ports: ["8080:80"]

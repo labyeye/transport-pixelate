@@ -4,12 +4,12 @@
 | Component | Notes |
 |---|---|
 | MongoDB 6+ | Use a managed cluster or a replica set; **take backups** (see below). |
-| Node.js 22 | API (`api/`). |
-| Static hosting / nginx | Serves `web/dist` and proxies `/api` and `/socket.io` to the API. |
+| Node.js 22 | API (`backend/`). |
+| Static hosting / nginx | Serves `frontend/dist` and proxies `/api` and `/socket.io` to the API. |
 | HTTPS | Terminate TLS in front (Caddy, Traefik, cloud load balancer). Required for the mobile app on Android release builds and for browser geolocation/secure cookies. |
 | Persistent disk | `UPLOAD_DIR` holds uploaded documents; back it up with the database. |
 
-## Configuration (`api/.env`)
+## Configuration (`backend/.env`)
 | Variable | Required | Purpose |
 |---|---|---|
 | `MONGO_URI` | yes | Database connection string |
@@ -26,7 +26,7 @@ Secrets never go in the web build or the mobile app. Do not commit `.env`.
 
 ## Option A — Docker Compose (single host)
 ```bash
-cp api/.env.example .env      # fill in secrets; set ALLOWED_ORIGINS and APP_URL to your public https URL
+cp backend/.env.example .env      # fill in secrets; set ALLOWED_ORIGINS and APP_URL to your public https URL
 docker compose up -d --build  # web on :8080, API and MongoDB internal
 curl http://localhost:8080/api/v1/health   # {"success":true,"db":"up",...}
 ```
@@ -36,20 +36,20 @@ environment (the Docker daemon was not running).** Build and smoke-test before r
 ## Option B — without containers
 ```bash
 # API
-cd api && npm ci --omit=dev
+cd backend && npm ci --omit=dev
 NODE_ENV=production node src/server.js     # run under systemd/pm2; one instance per database is fine
 # Web
-cd web && npm ci && npx vite build         # publish web/dist; use web/nginx.conf as the server block
+cd frontend && npm ci && npx vite build         # publish frontend/dist; use frontend/nginx.conf as the server block
 ```
 
 ## Local development
 ```bash
-cd api && cp .env.example .env && npm install && npm run dev           # needs a MongoDB
+cd backend && cp .env.example .env && npm install && npm run dev           # needs a MongoDB
 # or, with no MongoDB installed:
-cd api && npm install && npm run dev:memory                            # in-memory, data lost on exit
-cd web && npm install && npm run dev                                   # http://localhost:5175
+cd backend && npm install && npm run dev:memory                            # in-memory, data lost on exit
+cd frontend && npm install && npm run dev                                   # http://localhost:5175
 ```
-Tests: `cd api && npm test` (143, uses an in-memory MongoDB), `cd web && npm test`, `cd NestTransport && npx jest`.
+Tests: `cd backend && npm test` (143, uses an in-memory MongoDB), `cd frontend && npm test`, `cd NestTransport && npx jest`.
 Lint: `npm run lint` in each project.
 
 ## Operations

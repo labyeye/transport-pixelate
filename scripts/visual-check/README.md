@@ -4,8 +4,8 @@ Seeds a realistic demo organization through the real API, then drives Chrome thr
 reporting console errors, 5xx responses and horizontal overflow at phone width.
 
 ```bash
-cd api && npm run dev:memory            # API on :5100 with an in-memory database
-cd web && npx vite --port 5176          # web app
+cd backend && npm run dev:memory            # API on :5100 with an in-memory database
+cd frontend && npx vite --port 5176          # web app
 node scripts/visual-check/seed.mjs      # creates asha@greenfield.test / password123
 mkdir -p /tmp/shots && npm i --prefix /tmp/pw playwright-core
 NODE_PATH=/tmp/pw/node_modules node scripts/visual-check/screenshots.mjs http://localhost:5176 /tmp/shots
