@@ -11,7 +11,7 @@ const FEATURES = [
   { icon: ShieldCheck, label: "Documents & Compliance" },
 ];
 
-/** Split-screen auth layout. Structure and classes mirror Nest Play's LoginPage so the products feel identical. */
+/** Split-screen auth layout. Structure and classes mirror Nest Academy's LoginPage so the products feel identical. */
 export function AuthShell({ children, wide = false }) {
   return (
     <div className="min-h-screen flex">

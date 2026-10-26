@@ -1,7 +1,7 @@
 # Nest Transport vs FleetX — Audit & Phase Plan
 
 Date: 2026-10-15
-Scope: `nest-transport/api`, `nest-transport/web`, `nest-transport/NestTransport` (React Native). Reference flows: `sports-pixelate` (onboarding + subscription), `hrms` (tiers/feature gating), `NestCare` (tenant registration).
+Scope: `nest-transport/api`, `nest-transport/web`, `nest-transport/NestTransport` (React Native). Reference flows: `sports-pixelate` (onboarding + subscription), `hrms` (tiers/feature gating), `NestDoc` (tenant registration).
 
 > **Note:** Nest Transport side = code padh ke verified. FleetX side = public product knowledge + review sites (Capterra/G2/GetApp); fleetx.io ka live feature/pricing page check nahi hua, aur "FleetX" naam ke multiple products hain. Implement se pehle fleetx.io ki current feature list ek baar dekh lena. FleetX ka pricing public nahi hai (third-party estimate $20–60/vehicle/month software-only, GPS hardware extra).
 
@@ -128,7 +128,7 @@ FleetX/market: **per vehicle per month**, GPS hardware alag. Nest products: per-
 
 - Unit = **active vehicles** (sports mein users hain; transport ke liye vehicle market standard hai). Passengers/drivers unlimited — aggressive vs FleetX.
 - 18% GST on top, yearly = 12× (no discount) — sports/hrms jaisa; offer codes (flat_rate / percent_off / bonus_months) reuse.
-- Trial: **14 din** (NestCare) ya 2 mahine (sports) — decide karo; Transport ko hardware/ops setup time chahiye, isliye 30 din suggest.
+- Trial: **14 din** (NestDoc) ya 2 mahine (sports) — decide karo; Transport ko hardware/ops setup time chahiye, isliye 30 din suggest.
 - ⚠ ₹X/₹Y maine invent nahi kiye — aap final karo; FleetX ~$20–60 (₹1,700–5,000) /vehicle/month estimate hai, school-bus segment mein ₹100–300/vehicle ke aas-paas competitive rehta hai (verify karna).
 
 ---

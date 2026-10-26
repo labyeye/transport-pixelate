@@ -1,7 +1,7 @@
 # Nest Transport — implementation status
 
-Last updated 2026-10-10. Stack: **JavaScript** throughout — Express + Mongoose API, React + Vite + Tailwind web (Nest Play's
-design system), React Native mobile app. Source of truth for design: Nest Play (`sports-pixelate`).
+Last updated 2026-10-10. Stack: **JavaScript** throughout — Express + Mongoose API, React + Vite + Tailwind web (Nest Academy's
+design system), React Native mobile app. Source of truth for design: Nest Academy (`sports-pixelate`).
 
 ## Verification at a glance
 | What | Result |

@@ -10,5 +10,5 @@ node scripts/visual-check/seed.mjs      # creates asha@greenfield.test / passwor
 mkdir -p /tmp/shots && npm i --prefix /tmp/pw playwright-core
 NODE_PATH=/tmp/pw/node_modules node scripts/visual-check/screenshots.mjs http://localhost:5176 /tmp/shots
 ```
-Set the Chrome path in `screenshots.mjs` if it is not the macOS default. Compare the images against Nest Play side by side;
+Set the Chrome path in `screenshots.mjs` if it is not the macOS default. Compare the images against Nest Academy side by side;
 `docs/UI_CONSISTENCY.md` records what was compared and what differs.

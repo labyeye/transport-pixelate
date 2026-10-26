@@ -2,7 +2,7 @@ import whatsapp from "@/assets/whatsapp.png";
 import pixelateNest from "@/assets/pixelatenest.png";
 import { cn } from "@/lib/utils";
 
-/** Official WhatsApp mark (same asset Nest Play uses). */
+/** Official WhatsApp mark (same asset Nest Academy uses). */
 export function WhatsAppIcon({ className }) {
   return (
     <img
