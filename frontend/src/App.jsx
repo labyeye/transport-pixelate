@@ -24,6 +24,8 @@ import RoutesPage from "@/pages/RoutesPage";
 import DriversPage from "@/pages/DriversPage";
 import SubscriptionPage from "@/pages/SubscriptionPage";
 import AlertsPage from "@/pages/AlertsPage";
+import CreditsPage from "@/pages/CreditsPage";
+import { CreditsProvider } from "@/contexts/CreditsContext";
 const qc = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 });
@@ -51,6 +53,7 @@ export default function App() {
     <QueryClientProvider client={qc}>
       <ToastProvider>
         <AuthProvider>
+          <CreditsProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<AuthPage />} />
@@ -209,9 +212,18 @@ export default function App() {
                   </Protected>
                 }
               />
+              <Route
+                path="/credits"
+                element={
+                  <Protected>
+                    <CreditsPage />
+                  </Protected>
+                }
+              />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
+          </CreditsProvider>
         </AuthProvider>
       </ToastProvider>
     </QueryClientProvider>

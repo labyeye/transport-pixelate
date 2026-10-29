@@ -1,3 +1,5 @@
+import { CreditTopup } from "../../models/CreditTopup.js";
+import { completeTopup } from "../credits/credits.service.js";
 import { Router } from "express";
 import { z } from "zod";
 import { FeePlan } from "../../models/FeePlan.js";
@@ -69,6 +71,15 @@ r.post(
     if (planSub) {
       if (p.amount === planSub.pending.amount)
         await activateFromPending(planSub, p.id);
+      return res.json({ success: true });
+    }
+    // WhatsApp / SMS credit top-ups share this webhook too; the amount must match the stored order.
+    if (await CreditTopup.exists({ orderId: p.order_id })) {
+      await completeTopup({
+        orderId: p.order_id,
+        paymentId: p.id,
+        paidAmount: p.amount,
+      }).catch((e) => console.error("[credits] webhook:", e.message));
       return res.json({ success: true });
     }
     const intent = await PaymentIntent.findOne({ orderId: p.order_id });

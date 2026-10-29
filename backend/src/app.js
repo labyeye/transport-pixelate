@@ -27,6 +27,7 @@ import driverRoutes2 from "./modules/driver/driver.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import subscriptionRoutes from "./modules/saas/subscription.routes.js";
 import alertRoutes from "./modules/alerts/alerts.routes.js";
+import creditsRoutes from "./modules/credits/credits.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 export function createApp(allowedOrigins) {
   const app = express();
@@ -77,6 +78,7 @@ export function createApp(allowedOrigins) {
   app.use("/api/v1/billing", billingRoutes);
   app.use("/api/v1/subscription", subscriptionRoutes);
   app.use("/api/v1/alerts", alertRoutes);
+  app.use("/api/v1/credits", creditsRoutes);
   app.use("/api/v1/driver", driverRoutes2);
   app.use("/api/v1/dashboard", dashboardRoutes);
   app.use((_req, res) =>

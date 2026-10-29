@@ -1,6 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu } from "lucide-react";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { ProfileMenu } from "@/components/layout/ProfileMenu";
 export function AppHeader({ title, onMenuOpen }) {
   const { user } = useAuth();
   if (!user) return null;
@@ -21,15 +22,7 @@ export function AppHeader({ title, onMenuOpen }) {
 
       <div className="flex items-center gap-2 sm:gap-3">
         <NotificationBell />
-
-        <div className="flex items-center gap-2 border-2 border-black bg-[#024BAB] px-2 sm:px-3 py-1.5">
-          <div className="w-6 h-6 border-2 border-black shrink-0 overflow-hidden bg-[#FA731C] flex items-center justify-center text-[10px] font-bold text-white rounded-full">
-            {user.name?.[0]?.toUpperCase() ?? "U"}
-          </div>
-          <span className="hidden sm:block text-sm font-bold text-white max-w-[100px] truncate">
-            {user.name}
-          </span>
-        </div>
+        <ProfileMenu />
       </div>
     </header>
   );

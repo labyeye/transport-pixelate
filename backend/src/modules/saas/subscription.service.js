@@ -1,3 +1,4 @@
+import { onSubscriptionPaid } from "../credits/credits.service.js";
 import { Subscription } from "../../models/Subscription.js";
 import { Vehicle } from "../../models/Vehicle.js";
 import { OfferCode } from "../../models/OfferCode.js";
@@ -123,6 +124,10 @@ export async function activateFromPending(sub, paymentId) {
   await sub.save();
   if (p.offerCode)
     await OfferCode.updateOne({ code: p.offerCode }, { $inc: { usedCount: 1 } });
+  onSubscriptionPaid(sub.organization, {
+    amountPaid: p.amount,
+    refId: paymentId,
+  }).catch((e) => console.error("[credits] bonus:", e.message));
   return sub;
 }
 

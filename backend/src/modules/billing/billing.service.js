@@ -410,6 +410,18 @@ export const razorpay = {
       );
     return j;
   },
+  async fetchOrderPayments(orderId) {
+    const res = await fetchImpl(
+      `https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}/payments`,
+      { headers: { Authorization: this.auth() } },
+    );
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok)
+      throw new Error(
+        `Razorpay error ${res.status}: ${j.error?.description ?? "lookup failed"}`,
+      );
+    return j.items ?? [];
+  },
 };
 
 const hmac = (secret, data) =>

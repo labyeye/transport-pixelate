@@ -10,6 +10,8 @@ import { Field, inputCls } from "@/components/common/Field";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { del, get, post, put } from "@/services/api";
+import { Link } from "react-router-dom";
+import { fmtCredits, useCredits } from "@/contexts/CreditsContext";
 import { errMsg } from "@/lib/errors";
 
 const EXT = ["email", "sms", "whatsapp", "push"];
@@ -110,6 +112,7 @@ function Preferences() {
 function Events() {
   const qc = useQueryClient();
   const { toast } = useToast();
+  const { credits } = useCredits();
   const { data } = useQuery({
     queryKey: ["notif-settings"],
     queryFn: async () => (await get("/notifications/settings")).data,
@@ -140,6 +143,25 @@ function Events() {
     save.mutate({ events: { [event]: patch } });
   return (
     <div className="space-y-5">
+      {credits?.metered && (
+        <div
+          className={`border-2 border-black p-4 text-sm space-y-1 ${credits.zero ? "bg-red-50" : "bg-[#F0FFF8]"}`}
+        >
+          <p className="font-medium">
+            WhatsApp / SMS credits: {fmtCredits(credits.total)}
+            {credits.zero && " (messages paused)"}
+          </p>
+          <p className="text-xs text-gray-600">
+            Each WhatsApp message costs {credits.rates?.whatsapp} credit and each SMS{" "}
+            {credits.rates?.sms}. Email and in-app alerts are free. Switch an event or channel off
+            below and it is never sent or charged. Sending stops when credits run out and resumes
+            after a top-up.
+          </p>
+          <Link to="/credits" className="text-xs font-medium text-[#024BAB] hover:underline">
+            Add credits &amp; see usage
+          </Link>
+        </div>
+      )}
       <div className="border-2 border-black bg-white">
         <div className="px-4 py-3 border-b-2 border-black bg-[#024BAB]/5 font-bold">
           Channels

@@ -8,6 +8,12 @@ import { CHANNELS, EVENTS, EXTERNAL } from "./catalog.js";
 import { channels } from "./channels/index.js";
 import { render } from "./render.js";
 import {
+  commit,
+  isMetered,
+  refund,
+  reserve,
+} from "../credits/credits.service.js";
+import {
   ensureSubscription,
   featuresFor,
 } from "../saas/subscription.service.js";
@@ -21,7 +27,9 @@ export async function ruleFor(org, event) {
   if (!def) return null;
   const s = await NotificationSetting.findOne({ organization: org }).lean();
   const o = s?.events?.[event];
-  const wa = featuresFor(await ensureSubscription(org)).whatsapp;
+  // an organization that pays per message with credits does not need the plan's WhatsApp tier
+  const wa =
+    featuresFor(await ensureSubscription(org)).whatsapp || (await isMetered(org));
   const chOn = (c) =>
     c === "in_app" ||
     (s?.channels?.[c]?.enabled === true && (c !== "whatsapp" || wa));
@@ -185,12 +193,31 @@ export async function deliver(attempt) {
     attempt.nextRetryAt = undefined;
     return attempt.save();
   }
+  // WhatsApp credits: a metered organization pays per WhatsApp / SMS message, charged before sending and
+  // refunded if the provider rejects it. Email and in-app are free.
+  const paid = attempt.channel === "whatsapp" || attempt.channel === "sms";
+  const hold = paid
+    ? await reserve(attempt.organization, {
+        kind: attempt.channel,
+        phone: attempt.to,
+      })
+    : null;
+  if (hold && !hold.ok) {
+    attempt.status = "skipped";
+    attempt.error =
+      hold.reason === "daily_cap"
+        ? "Daily message limit reached"
+        : "Not enough credits";
+    attempt.nextRetryAt = undefined;
+    return attempt.save();
+  }
   try {
     const out = await adapter.send({
       to: attempt.to,
       subject: attempt.subject,
       body: attempt.body,
     });
+    if (hold) await commit(hold, out.id);
     Object.assign(attempt, {
       status: "sent",
       provider: adapter.key,
@@ -200,6 +227,7 @@ export async function deliver(attempt) {
       nextRetryAt: undefined,
     });
   } catch (e) {
+    if (hold) await refund(hold);
     attempt.error = String(e.message).slice(0, 300); // provider text only; never includes our credentials
     if (attempt.attempts >= MAX_ATTEMPTS) {
       attempt.status = "failed";
